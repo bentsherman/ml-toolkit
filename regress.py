@@ -11,7 +11,7 @@ import sys
 
 
 
-def test_model(reg, X, y):
+def evaluate(reg, X, y):
 	scores = sklearn.model_selection.cross_val_score(reg, X, y, cv=5)
 	print "r = %8.3f, r^2 = %8.3f +/- %.3f" % (math.sqrt(max(0, scores.mean())), scores.mean(), scores.std())
 	print
@@ -36,49 +36,49 @@ if __name__ == "__main__":
 
 	print "Evaluating linear regression..."
 	reg = sklearn.linear_model.LinearRegression()
-	test_model(reg, X, y)
+	evaluate(reg, X, y)
 
 	print "Evaluating ridge regression..."
 	reg = sklearn.linear_model.Ridge()
-	test_model(reg, X, y)
+	evaluate(reg, X, y)
 
 	print "Evaluating lasso regression..."
 	reg = sklearn.linear_model.Lasso()
-	test_model(reg, X, y)
+	evaluate(reg, X, y)
 
 	print "Evaluating elastic net regression..."
 	reg = sklearn.linear_model.ElasticNet()
-	test_model(reg, X, y)
+	evaluate(reg, X, y)
 	print
 	print "Evaluating Bayesian ridge regression..."
 	reg = sklearn.linear_model.BayesianRidge()
-	test_model(reg, X, y)
+	evaluate(reg, X, y)
 
 	print "Evaluating SGD..."
 	reg = sklearn.linear_model.SGDRegressor(max_iter=1000, tol=1e-3)
-	test_model(reg, X, y)
+	evaluate(reg, X, y)
 
 	print "Evaluating Polynomial regression..."
 	X_poly = sklearn.preprocessing.PolynomialFeatures(degree=2).fit_transform(X)
 	reg = sklearn.linear_model.LinearRegression(fit_intercept=False)
-	test_model(reg, X_poly, y)
+	evaluate(reg, X_poly, y)
 
 	print "Evaluating Kernel ridge regression..."
 	reg = sklearn.kernel_ridge.KernelRidge()
-	test_model(reg, X, y)
+	evaluate(reg, X, y)
 
 	print "Evaluating SVM (linear kernel)..."
 	reg = sklearn.svm.SVR(kernel="linear")
-	test_model(reg, X, y)
+	evaluate(reg, X, y)
 
 	print "Evaluating SVM (polynomial kernel)..."
 	reg = sklearn.svm.SVR(kernel="poly")
-	test_model(reg, X, y)
+	evaluate(reg, X, y)
 
 	print "Evaluating SVM (RBF kernel)..."
 	reg = sklearn.svm.SVR(kernel="rbf")
-	test_model(reg, X, y)
+	evaluate(reg, X, y)
 
 	print "Evaluating MLP..."
 	reg = sklearn.neural_network.MLPRegressor(hidden_layer_sizes=(30,), max_iter=500)
-	test_model(reg, X, y)
+	evaluate(reg, X, y)
