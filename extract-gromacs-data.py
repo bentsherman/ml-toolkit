@@ -1,23 +1,24 @@
 import numpy as np
 import os
 import pandas as pd
+import random
 import sys
 
 if __name__ == "__main__":
 	# parse command-line arguments
-	if len(sys.argv) != 3:
-		print "usage: python extract-gromacs-data.py [dir] [outfile]"
+	if len(sys.argv) != 4:
+		print "usage: python extract-gromacs-data.py [dir] [outfile] [num-samples]"
 		sys.exit(1)
 
 	INPUT_DIR = sys.argv[1]
 	OUTFILE = sys.argv[2]
+	NUM_SAMPLES = int(sys.argv[3])
 
 	# get list of all subdirectories
 	dirs = ["%s/%s" % (INPUT_DIR, dir) for dir in os.listdir(INPUT_DIR)]
 	dirs = ["%s/training-data" % (dir) for dir in dirs if os.path.isdir(dir)]
 
 	# initialize data matrix
-	num_samples = sum([len(os.listdir(dir)) for dir in dirs])
 	num_features = None
 	data = None
 	columns = []
@@ -31,7 +32,7 @@ if __name__ == "__main__":
 		print dir
 
 		label = dir.split("/")[-2].split("-")[0]
-		files = os.listdir(dir)
+		files = random.sample(os.listdir(dir), NUM_SAMPLES / len(dirs))
 
 		# iterate through each sample file
 		for f in files:
@@ -41,7 +42,7 @@ if __name__ == "__main__":
 			# allocate data matrix on first sample
 			if len(columns) == 0:
 				num_features = len(df)
-				data = np.empty((num_samples, num_features), dtype=np.float32)
+				data = np.empty((NUM_SAMPLES, num_features), dtype=np.float32)
 				columns = df[2].values
 
 			# HACK: some sample files have duplicate rows
@@ -65,3 +66,4 @@ if __name__ == "__main__":
 	df.to_csv(OUTFILE, sep="\t")
 
 	# TODO: save labels
+	# print labels
