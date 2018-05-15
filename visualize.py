@@ -40,13 +40,11 @@ if __name__ == "__main__":
 	config = json.load(open(sys.argv[2]))
 
 	df = pd.read_csv(sys.argv[1], sep="\t")
-	df_nume = df.drop(config["categorical"], axis=1)
 	df_cate = df[config["categorical"]]
+	X = df[config["numerical"]]
+	y = df[config["output"][0]]
 
-	X = df_nume.drop(config["prediction"], axis=1)
-	y = df_nume[config["prediction"][0]]
-
-	X.iloc[:] = sklearn.preprocessing.scale(X)
+	X = pd.DataFrame(sklearn.preprocessing.scale(X), X.index, X.columns)
 
 	print "Creating heatmap..."
 	sns.heatmap(X)
@@ -63,16 +61,15 @@ if __name__ == "__main__":
 	plt.show()
 
 	print "Creating transition matrices..."
-
 	for i in xrange(0, len(config["categorical"]), 2):
 		x = config["categorical"][i]
 		y = config["categorical"][i + 1]
 		T = transition_matrix(x, y, df)
 
 		ax = sns.heatmap(T)
-		ax.set_title(x.split()[0])
-		ax.set_ylabel(x.split()[-1])
-		ax.set_xlabel(y.split()[-1])
+		ax.set_title(x.split("_")[0])
+		ax.set_ylabel(x.split("_")[-1])
+		ax.set_xlabel(y.split("_")[-1])
 		rotate_xticklabels(45)
 		plt.show()
 
@@ -87,22 +84,21 @@ if __name__ == "__main__":
 	rotate_xticklabels(45)
 	plt.show()
 
-	# print "Creating pairwise scatter plots..."
-	# g = sns.PairGrid(X, diag_sharey=False)
-	# g.map_lower(sns.kdeplot, cmap="Blues_d")
-	# g.map_upper(plt.scatter)
-	# g.map_diag(sns.kdeplot, lw=3, legend=False)
-	# plt.show()
+	print "Creating pairwise scatter plots..."
+	g = sns.PairGrid(X, diag_sharey=False)
+	g.map_lower(plt.scatter, s=2)
+	g.map_diag(sns.kdeplot, lw=2, legend=False)
+	plt.show()
 
 	print "Creating 2-D t-SNE visualization..."
 	X_tsne = sklearn.manifold.TSNE(n_components=2).fit_transform(X).T
 	plt.scatter(X_tsne[0], X_tsne[1], c=y, s=2)
 	plt.show()
 
-	# print "Creating 3-D t-SNE visualization..."
-	# X_tsne = sklearn.manifold.TSNE(n_components=3).fit_transform(X).T
-	# density = scipy.stats.gaussian_kde(X_tsne)(X_tsne)
-	# fig = plt.figure()
-	# ax = fig.add_subplot(111, projection="3d")
-	# ax.scatter(X_tsne[0], X_tsne[1], X_tsne[2], c=density, s=2)
-	# plt.show()
+	print "Creating 3-D t-SNE visualization..."
+	X_tsne = sklearn.manifold.TSNE(n_components=3).fit_transform(X).T
+	density = scipy.stats.gaussian_kde(X_tsne)(X_tsne)
+	fig = plt.figure()
+	ax = fig.add_subplot(111, projection="3d")
+	ax.scatter(X_tsne[0], X_tsne[1], X_tsne[2], c=density, s=2)
+	plt.show()
