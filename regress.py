@@ -26,13 +26,11 @@ if __name__ == "__main__":
 	config = json.load(open(sys.argv[2]))
 
 	df = pd.read_csv(sys.argv[1], sep="\t")
-	df_nume = df.drop(config["categorical"], axis=1)
 	df_cate = df[config["categorical"]]
+	X = df[config["numerical"]]
+	y = df[config["output"][0]]
 
-	X = df_nume.drop(config["prediction"], axis=1)
-	y = df_nume[config["prediction"][0]]
-
-	X.iloc[:] = sklearn.preprocessing.scale(X)
+	X = pd.DataFrame(sklearn.preprocessing.scale(X), X.index, X.columns)
 
 	print "Evaluating linear regression..."
 	reg = sklearn.linear_model.LinearRegression()
