@@ -18,6 +18,20 @@ def rotate_xticklabels(angle):
 
 
 
+def transition_matrix(x, y, data):
+	u = list(set(data[x]).union(set(data[y])))
+	T = pd.DataFrame(np.zeros((len(u), len(u))), index=u, columns=u, dtype=np.int32)
+
+	for k in xrange(len(data)):
+		i = u.index(data[x][k])
+		j = u.index(data[y][k])
+
+		T.iloc[i, j] += 1
+
+	return T
+
+
+
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
 		print "usage: python visualize.py [infile] [config]"
@@ -51,24 +65,14 @@ if __name__ == "__main__":
 	print "Creating transition matrices..."
 
 	for i in xrange(0, len(config["categorical"]), 2):
-		label1 = config["categorical"][i]
-		label2 = config["categorical"][i + 1]
-		u1 = np.unique(df_cate[label1])
-		u2 = np.unique(df_cate[label2])
-		u = list(set(u1).union(set(u2)))
-
-		T = pd.DataFrame(np.zeros((len(u), len(u))), index=u, columns=u, dtype=np.int32)
-
-		for j in xrange(len(df)):
-			i1 = u.index(df[label1][j])
-			j1 = u.index(df[label2][j])
-
-			T.iloc[i1, j1] += 1
+		x = config["categorical"][i]
+		y = config["categorical"][i + 1]
+		T = transition_matrix(x, y, df)
 
 		ax = sns.heatmap(T)
-		ax.set_title(label1.split()[0])
-		ax.set_ylabel(label1.split()[-1])
-		ax.set_xlabel(label2.split()[-1])
+		ax.set_title(x.split()[0])
+		ax.set_ylabel(x.split()[-1])
+		ax.set_xlabel(y.split()[-1])
 		rotate_xticklabels(45)
 		plt.show()
 
