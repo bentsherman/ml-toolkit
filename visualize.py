@@ -32,6 +32,91 @@ def transition_matrix(x, y, data):
 
 
 
+def plot_heatmap(df, X, y):
+	print "Plotting heatmap..."
+	sns.heatmap(X)
+	rotate_xticklabels(45)
+	plt.show()
+
+
+
+def plot_dist_input(df, X, y):
+	print "Plotting distributions of features..."
+	sns.violinplot(data=X, bw=0.2, cut=1, linewidth=1)
+	rotate_xticklabels(45)
+	plt.show()
+
+
+
+def plot_dist_output(df, X, y):
+	print "Plotting distribution of output..."
+	sns.distplot(y)
+	plt.show()
+
+
+
+def plot_transitions(df, X, y):
+	print "Plotting transition matrices..."
+	for i in xrange(0, len(config["categorical"]), 2):
+		x = config["categorical"][i]
+		y = config["categorical"][i + 1]
+		T = transition_matrix(x, y, df)
+
+		ax = sns.heatmap(T)
+		ax.set_title(x.split("_")[0])
+		ax.set_ylabel(x.split("_")[-1])
+		ax.set_xlabel(y.split("_")[-1])
+		rotate_xticklabels(45)
+		plt.show()
+
+
+
+def plot_correlation_heatmap(df, X, y):
+	print "Plotting correlation heatmap..."
+	corr = X.corr()
+	sns.heatmap(corr)
+	rotate_xticklabels(45)
+	plt.show()
+
+
+
+def plot_correlation_clustermap(df, X, y):
+	print "Plotting correlation clustermap..."
+	corr = X.corr()
+	sns.clustermap(corr)
+	rotate_xticklabels(45)
+	plt.show()
+
+
+
+def plot_pairwise(df, X, y):
+	print "Plotting pairwise distributions..."
+	g = sns.PairGrid(X, diag_sharey=False)
+	g.map_lower(plt.scatter, s=2)
+	g.map_diag(sns.kdeplot, lw=2, legend=False)
+	plt.show()
+
+
+
+def plot_tsne_2d(df, X, y):
+	print "Plotting 2-D t-SNE..."
+	X_tsne = sklearn.manifold.TSNE(n_components=2).fit_transform(X).T
+	plt.scatter(X_tsne[0], X_tsne[1], c=y, s=2)
+	plt.show()
+
+
+
+def plot_tsne_3d(df, X, y):
+	print "Plotting 3-D t-SNE..."
+	X_tsne = sklearn.manifold.TSNE(n_components=3).fit_transform(X).T
+	density = scipy.stats.gaussian_kde(X_tsne)(X_tsne)
+	fig = plt.figure()
+	ax = fig.add_subplot(111, projection="3d")
+	ax.scatter(X_tsne[0], X_tsne[1], X_tsne[2], c=density, s=2)
+	plt.show()
+
+
+
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
 		print "usage: python visualize.py [infile] [config]"
@@ -52,59 +137,17 @@ if __name__ == "__main__":
 	X = X[mask]
 	y = y[mask]
 
-	print "Creating heatmap..."
-	sns.heatmap(X)
-	rotate_xticklabels(45)
-	plt.show()
+	methods = [
+		plot_heatmap,
+		plot_dist_input,
+		plot_dist_output,
+		plot_transitions,
+		plot_correlation_heatmap,
+		plot_correlation_clustermap,
+		plot_pairwise,
+		plot_tsne_2d,
+		plot_tsne_3d
+	]
 
-	print "Creating violin plot of features..."
-	sns.violinplot(data=X, bw=0.2, cut=1, linewidth=1)
-	rotate_xticklabels(45)
-	plt.show()
-
-	print "Creating distribution plot of output..."
-	sns.distplot(y)
-	plt.show()
-
-	print "Creating transition matrices..."
-	for i in xrange(0, len(config["categorical"]), 2):
-		x = config["categorical"][i]
-		y = config["categorical"][i + 1]
-		T = transition_matrix(x, y, df)
-
-		ax = sns.heatmap(T)
-		ax.set_title(x.split("_")[0])
-		ax.set_ylabel(x.split("_")[-1])
-		ax.set_xlabel(y.split("_")[-1])
-		rotate_xticklabels(45)
-		plt.show()
-
-	print "Creating correlation heatmap..."
-	corr = X.corr()
-	sns.heatmap(corr)
-	rotate_xticklabels(45)
-	plt.show()
-
-	print "Creating correlation clustermap..."
-	sns.clustermap(corr)
-	rotate_xticklabels(45)
-	plt.show()
-
-	print "Creating pairwise scatter plots..."
-	g = sns.PairGrid(X, diag_sharey=False)
-	g.map_lower(plt.scatter, s=2)
-	g.map_diag(sns.kdeplot, lw=2, legend=False)
-	plt.show()
-
-	print "Creating 2-D t-SNE visualization..."
-	X_tsne = sklearn.manifold.TSNE(n_components=2).fit_transform(X).T
-	plt.scatter(X_tsne[0], X_tsne[1], c=y, s=2)
-	plt.show()
-
-	print "Creating 3-D t-SNE visualization..."
-	X_tsne = sklearn.manifold.TSNE(n_components=3).fit_transform(X).T
-	density = scipy.stats.gaussian_kde(X_tsne)(X_tsne)
-	fig = plt.figure()
-	ax = fig.add_subplot(111, projection="3d")
-	ax.scatter(X_tsne[0], X_tsne[1], X_tsne[2], c=density, s=2)
-	plt.show()
+	for method in methods:
+		method(df, X, y)
