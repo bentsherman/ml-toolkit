@@ -98,6 +98,22 @@ def plot_pairwise(df, X, y):
 
 
 
+def plot_2d(df, X, y):
+	print "Plotting 2-D..."
+	plt.scatter(X.iloc[:, 0], X.iloc[:, 1], c=y, s=2)
+	plt.show()
+
+
+
+def plot_3d(df, X, y):
+	print "Plotting 3-D..."
+	fig = plt.figure()
+	ax = fig.add_subplot(111, projection="3d")
+	ax.scatter(X.iloc[:, 0], X.iloc[:, 1], X.iloc[:, 2], c=y, s=2)
+	plt.show()
+
+
+
 def plot_tsne_2d(df, X, y):
 	print "Plotting 2-D t-SNE..."
 	X_tsne = sklearn.manifold.TSNE(n_components=2).fit_transform(X).T
@@ -145,6 +161,8 @@ if __name__ == "__main__":
 		plot_correlation_heatmap,
 		plot_correlation_clustermap,
 		plot_pairwise,
+		plot_2d,
+		plot_3d,
 		plot_tsne_2d,
 		plot_tsne_3d
 	]
