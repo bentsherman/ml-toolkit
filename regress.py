@@ -1,105 +1,114 @@
 import json
 import math
+import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 import sklearn.kernel_ridge
 import sklearn.linear_model
 import sklearn.model_selection
 import sklearn.neural_network
+import sklearn.pipeline
 import sklearn.preprocessing
 import sklearn.svm
 import sys
 
 
 
-def evaluate(reg, X, y):
+def evaluate_cv(reg, X, y):
 	scores = sklearn.model_selection.cross_val_score(reg, X, y, cv=5)
 	print "r = %8.3f, r^2 = %8.3f +/- %.3f" % (math.sqrt(max(0, scores.mean())), scores.mean(), scores.std())
-	print
 
 
 
-def evaluate_linear(X, y):
+def evaluate_plot(reg, X, y):
+	for i in xrange(5):
+		# split dataset into train / test sets
+		X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, train_size=0.8, test_size=0.2)
+
+		# fit regression model
+		print reg.fit(X_train, y_train)
+
+		# predict output
+		y_pred = reg.predict(X_test)
+
+		# plot correlation of predicted and expected output
+		sns.jointplot(y_test, y_pred, kind="reg")
+		plt.show()
+
+
+
+def create_linear(X, y):
 	print "Evaluating linear regression..."
-	reg = sklearn.linear_model.LinearRegression()
-	evaluate(reg, X, y)
+	return sklearn.linear_model.LinearRegression()
 
 
 
-def evaluate_ridge(X, y):
+def create_ridge(X, y):
 	print "Evaluating ridge regression..."
-	reg = sklearn.linear_model.Ridge()
-	evaluate(reg, X, y)
+	return sklearn.linear_model.Ridge()
 
 
 
-def evaluate_lasso(X, y):
+def create_lasso(X, y):
 	print "Evaluating lasso regression..."
-	reg = sklearn.linear_model.Lasso()
-	evaluate(reg, X, y)
+	return sklearn.linear_model.Lasso()
 
 
 
-def evaluate_elastic_net(X, y):
+def create_elastic_net(X, y):
 	print "Evaluating elastic net regression..."
-	reg = sklearn.linear_model.ElasticNet()
-	evaluate(reg, X, y)
+	return sklearn.linear_model.ElasticNet()
 
 
 
-def evaluate_bayesian_ridge(X, y):
+def create_bayesian_ridge(X, y):
 	print "Evaluating Bayesian ridge regression..."
-	reg = sklearn.linear_model.BayesianRidge()
-	evaluate(reg, X, y)
+	return sklearn.linear_model.BayesianRidge()
 
 
 
-def evaluate_sgd(X, y):
+def create_sgd(X, y):
 	print "Evaluating SGD..."
-	reg = sklearn.linear_model.SGDRegressor(max_iter=1000, tol=1e-3)
-	evaluate(reg, X, y)
+	return sklearn.linear_model.SGDRegressor(max_iter=1000, tol=1e-3)
 
 
 
-def evaluate_polynomial(X, y):
+def create_polynomial(X, y):
 	print "Evaluating Polynomial regression..."
-	X_poly = sklearn.preprocessing.PolynomialFeatures(degree=2).fit_transform(X)
-	reg = sklearn.linear_model.LinearRegression(fit_intercept=False)
-	evaluate(reg, X_poly, y)
+	return sklearn.pipeline.Pipeline([
+		("poly", sklearn.preprocessing.PolynomialFeatures(degree=2)),
+		("linear", sklearn.linear_model.LinearRegression(fit_intercept=False))
+	])
 
 
 
-def evaluate_kernel_ridge(X, y):
+def create_kernel_ridge(X, y):
 	print "Evaluating Kernel ridge regression..."
-	reg = sklearn.kernel_ridge.KernelRidge()
-	evaluate(reg, X, y)
+	return sklearn.kernel_ridge.KernelRidge()
 
 
 
-def evaluate_svm_linear(X, y):
+def create_svm_linear(X, y):
 	print "Evaluating SVM regression (linear kernel)..."
-	reg = sklearn.svm.SVR(kernel="linear")
-	evaluate(reg, X, y)
+	return sklearn.svm.SVR(kernel="linear")
 
 
 
-def evaluate_svm_poly(X, y):
+def create_svm_poly(X, y):
 	print "Evaluating SVM regression (polynomial kernel)..."
-	reg = sklearn.svm.SVR(kernel="poly")
-	evaluate(reg, X, y)
+	return sklearn.svm.SVR(kernel="poly")
 
 
 
-def evaluate_svm_rbf(X, y):
+def create_svm_rbf(X, y):
 	print "Evaluating SVM regression (RBF kernel)..."
-	reg = sklearn.svm.SVR(kernel="rbf")
-	evaluate(reg, X, y)
+	return sklearn.svm.SVR(kernel="rbf")
 
 
 
-def evaluate_mlp(X, y):
+def create_mlp(X, y):
 	print "Evaluating MLP regression..."
-	reg = sklearn.neural_network.MLPRegressor(hidden_layer_sizes=(30,), max_iter=500)
-	evaluate(reg, X, y)
+	return sklearn.neural_network.MLPRegressor(hidden_layer_sizes=(30,), max_iter=500)
 
 
 
@@ -124,19 +133,26 @@ if __name__ == "__main__":
 	y = y[mask]
 
 	methods = [
-		evaluate_linear,
-		evaluate_ridge,
-		evaluate_lasso,
-		evaluate_elastic_net,
-		evaluate_bayesian_ridge,
-		evaluate_sgd,
-		evaluate_polynomial,
-		evaluate_kernel_ridge,
-		evaluate_svm_linear,
-		evaluate_svm_poly,
-		evaluate_svm_rbf,
-		evaluate_mlp
+		create_linear,
+		create_ridge,
+		create_lasso,
+		create_elastic_net,
+		create_bayesian_ridge,
+		create_sgd,
+		create_polynomial,
+		create_kernel_ridge,
+		create_svm_linear,
+		create_svm_poly,
+		create_svm_rbf,
+		create_mlp
 	]
 
 	for method in methods:
-		method(X, y)
+		reg = method(X, y)
+		evaluate_cv(reg, X, y)
+		print
+
+	for method in methods:
+		reg = method(X, y)
+		evaluate_plot(reg, X, y)
+		print
