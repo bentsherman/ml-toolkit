@@ -1,39 +1,34 @@
 import json
-import math
 import matplotlib.pyplot as plt
 import pandas as pd
+import scipy.stats
 import seaborn as sns
 import sklearn.kernel_ridge
 import sklearn.linear_model
+import sklearn.metrics
 import sklearn.model_selection
 import sklearn.neural_network
 import sklearn.pipeline
 import sklearn.preprocessing
 import sklearn.svm
+import sklearn.tree
 import sys
 
 
 
-def evaluate_cv(reg, X, y):
-	scores = sklearn.model_selection.cross_val_score(reg, X, y, cv=5)
-	print "r = %8.3f, r^2 = %8.3f +/- %.3f" % (math.sqrt(max(0, scores.mean())), scores.mean(), scores.std())
+def evaluate(reg, X, y):
+	# predict output
+	y_pred = sklearn.model_selection.cross_val_predict(reg, X, y, cv=5)
 
+	# compute metrics
+	r, p = scipy.stats.pearsonr(y, y_pred)
+	r2 = sklearn.metrics.r2_score(y, y_pred)
 
+	print "r = %8.3f, r^2 = %8.3f" % (r, r2)
 
-def evaluate_plot(reg, X, y):
-	for i in xrange(5):
-		# split dataset into train / test sets
-		X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, train_size=0.8, test_size=0.2)
-
-		# fit regression model
-		print reg.fit(X_train, y_train)
-
-		# predict output
-		y_pred = reg.predict(X_test)
-
-		# plot correlation of predicted and expected output
-		sns.jointplot(y_test, y_pred, kind="reg")
-		plt.show()
+	# plot correlation of predicted and expected output
+	sns.jointplot(y, y_pred, kind="reg")
+	plt.show()
 
 
 
@@ -90,7 +85,7 @@ def create_kernel_ridge(X, y):
 
 def create_svm_linear(X, y):
 	print "Evaluating SVM regression (linear kernel)..."
-	return sklearn.svm.SVR(kernel="linear")
+	return sklearn.svm.LinearSVR()
 
 
 
@@ -103,6 +98,12 @@ def create_svm_poly(X, y):
 def create_svm_rbf(X, y):
 	print "Evaluating SVM regression (RBF kernel)..."
 	return sklearn.svm.SVR(kernel="rbf")
+
+
+
+def create_decision_tree(X, y):
+	print "Evaluating decision tree regression..."
+	return sklearn.tree.DecisionTreeRegressor()
 
 
 
@@ -119,6 +120,7 @@ if __name__ == "__main__":
 
 	config = json.load(open(sys.argv[2]))
 
+	# load data, extract X and y
 	df = pd.read_csv(sys.argv[1], sep="\t")
 	df_cate = df[config["categorical"]]
 	X = df[config["numerical"]]
@@ -128,10 +130,11 @@ if __name__ == "__main__":
 	X = pd.DataFrame(sklearn.preprocessing.scale(X), X.index, X.columns)
 
 	# remove samples with high-variance output
-	mask = df[config["output"][1]] < abs(df[config["output"][0]])
+	mask = df[config["output"][1]] < 1.5
 	X = X[mask]
 	y = y[mask]
 
+	# evaluate each regressor
 	methods = [
 		create_linear,
 		create_ridge,
@@ -144,15 +147,11 @@ if __name__ == "__main__":
 		create_svm_linear,
 		create_svm_poly,
 		create_svm_rbf,
+		create_decision_tree,
 		create_mlp
 	]
 
 	for method in methods:
 		reg = method(X, y)
-		evaluate_cv(reg, X, y)
-		print
-
-	for method in methods:
-		reg = method(X, y)
-		evaluate_plot(reg, X, y)
+		evaluate(reg, X, y)
 		print

@@ -149,7 +149,7 @@ if __name__ == "__main__":
 	X = pd.DataFrame(sklearn.preprocessing.scale(X), X.index, X.columns)
 
 	# remove samples with high-variance output
-	mask = df[config["output"][1]] < abs(df[config["output"][0]])
+	mask = df[config["output"][1]] < 1.5
 	X = X[mask]
 	y = y[mask]
 
