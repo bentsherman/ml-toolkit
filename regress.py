@@ -16,9 +16,9 @@ import sys
 
 
 
-def evaluate(reg, X, y):
+def evaluate(model, X, y):
 	# predict output
-	y_pred = sklearn.model_selection.cross_val_predict(reg, X, y, cv=5)
+	y_pred = sklearn.model_selection.cross_val_predict(model, X, y, cv=5)
 
 	# compute metrics
 	r, p = scipy.stats.pearsonr(y, y_pred)
@@ -32,44 +32,37 @@ def evaluate(reg, X, y):
 
 
 
-def create_linear(X, y):
-	print "Evaluating linear regression..."
+def create_linear():
 	return sklearn.linear_model.LinearRegression()
 
 
 
-def create_ridge(X, y):
-	print "Evaluating ridge regression..."
+def create_ridge():
 	return sklearn.linear_model.Ridge()
 
 
 
-def create_lasso(X, y):
-	print "Evaluating lasso regression..."
+def create_lasso():
 	return sklearn.linear_model.Lasso()
 
 
 
-def create_elastic_net(X, y):
-	print "Evaluating elastic net regression..."
+def create_elastic_net():
 	return sklearn.linear_model.ElasticNet()
 
 
 
-def create_bayesian_ridge(X, y):
-	print "Evaluating Bayesian ridge regression..."
+def create_bayesian_ridge():
 	return sklearn.linear_model.BayesianRidge()
 
 
 
-def create_sgd(X, y):
-	print "Evaluating SGD..."
+def create_sgd():
 	return sklearn.linear_model.SGDRegressor(max_iter=1000, tol=1e-3)
 
 
 
-def create_polynomial(X, y):
-	print "Evaluating Polynomial regression..."
+def create_polynomial():
 	return sklearn.pipeline.Pipeline([
 		("poly", sklearn.preprocessing.PolynomialFeatures(degree=2)),
 		("linear", sklearn.linear_model.LinearRegression(fit_intercept=False))
@@ -77,38 +70,32 @@ def create_polynomial(X, y):
 
 
 
-def create_kernel_ridge(X, y):
-	print "Evaluating Kernel ridge regression..."
+def create_kernel_ridge():
 	return sklearn.kernel_ridge.KernelRidge()
 
 
 
-def create_svm_linear(X, y):
-	print "Evaluating SVM regression (linear kernel)..."
+def create_svm_linear():
 	return sklearn.svm.LinearSVR()
 
 
 
-def create_svm_poly(X, y):
-	print "Evaluating SVM regression (polynomial kernel)..."
+def create_svm_poly():
 	return sklearn.svm.SVR(kernel="poly")
 
 
 
-def create_svm_rbf(X, y):
-	print "Evaluating SVM regression (RBF kernel)..."
+def create_svm_rbf():
 	return sklearn.svm.SVR(kernel="rbf")
 
 
 
-def create_decision_tree(X, y):
-	print "Evaluating decision tree regression..."
+def create_decision_tree():
 	return sklearn.tree.DecisionTreeRegressor()
 
 
 
-def create_mlp(X, y):
-	print "Evaluating MLP regression..."
+def create_mlp():
 	return sklearn.neural_network.MLPRegressor(hidden_layer_sizes=(30,), max_iter=500)
 
 
@@ -136,22 +123,23 @@ if __name__ == "__main__":
 
 	# evaluate each regressor
 	methods = [
-		create_linear,
-		create_ridge,
-		create_lasso,
-		create_elastic_net,
-		create_bayesian_ridge,
-		create_sgd,
-		create_polynomial,
-		create_kernel_ridge,
-		create_svm_linear,
-		create_svm_poly,
-		create_svm_rbf,
-		create_decision_tree,
-		create_mlp
+		("linear regression", create_linear),
+		("ridge regression", create_ridge),
+		("lasso regression", create_lasso),
+		("elastic net regression", create_elastic_net),
+		("Bayesian ridge regression", create_bayesian_ridge),
+		("SGD regression", create_sgd),
+		("Polynomial regression", create_polynomial),
+		("Kernel ridge regression", create_kernel_ridge),
+		("SVM regression (linear kernel)", create_svm_linear),
+		("SVM regression (polynomial kernel)", create_svm_poly),
+		("SVM regression (RBF kernel)", create_svm_rbf),
+		("decision tree regression", create_decision_tree),
+		("MLP regression", create_mlp)
 	]
 
-	for method in methods:
-		reg = method(X, y)
-		evaluate(reg, X, y)
+	for (name, create_model) in methods:
+		print "Evaluating %s..." % (name)
+		model = create_model()
+		evaluate(model, X, y)
 		print

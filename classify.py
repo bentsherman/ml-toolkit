@@ -18,9 +18,9 @@ import sys
 
 
 
-def evaluate(clf, X, y):
+def evaluate(model, X, y):
 	# predict output
-	y_pred = sklearn.model_selection.cross_val_predict(clf, X, y, cv=5)
+	y_pred = sklearn.model_selection.cross_val_predict(model, X, y, cv=5)
 
 	# compute metrics
 	acc = sklearn.metrics.accuracy_score(y, y_pred)
@@ -39,86 +39,72 @@ def evaluate(clf, X, y):
 
 
 
-def create_logistic_regression(X, y):
-	print "Evaluating logistic regression..."
+def create_logistic_regression():
 	return sklearn.linear_model.LogisticRegression()
 
 
 
-def create_sgd_hinge(X, y):
-	print "Evaluating SGD (hinge loss)..."
+def create_sgd_hinge():
 	return sklearn.linear_model.SGDClassifier(loss="hinge", max_iter=1000, tol=1e-3)
 
 
 
-def create_sgd_log(X, y):
-	print "Evaluating SGD (log loss)..."
+def create_sgd_log():
 	return sklearn.linear_model.SGDClassifier(loss="log", max_iter=1000, tol=1e-3)
 
 
 
-def create_sgd_perceptron(X, y):
-	print "Evaluating SGD (perceptron loss)..."
+def create_sgd_perceptron():
 	return sklearn.linear_model.SGDClassifier(loss="perceptron", max_iter=1000, tol=1e-3)
 
 
 
-def create_lda(X, y):
-	print "Evaluating LDA classifier..."
+def create_lda():
 	return sklearn.discriminant_analysis.LinearDiscriminantAnalysis()
 
 
 
-def create_qda(X, y):
-	print "Evaluating QDA classifier..."
+def create_qda():
 	return sklearn.discriminant_analysis.QuadraticDiscriminantAnalysis()
 
 
 
-def create_svm_linear(X, y):
-	print "Evaluating SVM classifier (linear kernel)..."
+def create_svm_linear():
 	return sklearn.svm.LinearSVC()
 
 
 
-def create_svm_poly(X, y):
-	print "Evaluating SVM classifier (polynomial kernel)..."
+def create_svm_poly():
 	return sklearn.svm.SVC(kernel="poly")
 
 
 
-def create_svm_rbf(X, y):
-	print "Evaluating SVM classifier (RBF kernel)..."
+def create_svm_rbf():
 	return sklearn.svm.SVC(kernel="rbf")
 
 
 
-def create_svm_sigmoid(X, y):
-	print "Evaluating SVM classifier (sigmoid kernel)..."
+def create_svm_sigmoid():
 	return sklearn.svm.SVC(kernel="sigmoid")
 
 
 
-def create_knn(X, y):
-	print "Evaluating k-NN classifier..."
+def create_knn():
 	return sklearn.neighbors.KNeighborsClassifier()
 
 
 
-def create_naive_bayes(X, y):
-	print "Evaluating naive Bayes classifier..."
+def create_naive_bayes():
 	return sklearn.naive_bayes.GaussianNB()
 
 
 
-def create_decision_tree(X, y):
-	print "Evaluating decision tree classifier..."
+def create_decision_tree():
 	return sklearn.tree.DecisionTreeClassifier()
 
 
 
-def create_mlp(X, y):
-	print "Evaluating MLP classifier..."
+def create_mlp():
 	return sklearn.neural_network.MLPClassifier()
 
 
@@ -141,23 +127,24 @@ if __name__ == "__main__":
 
 	# evaluate each classifier
 	methods = [
-		create_logistic_regression,
-		create_sgd_hinge,
-		create_sgd_log,
-		create_sgd_perceptron,
-		create_lda,
-		create_qda,
-		create_svm_linear,
-		create_svm_poly,
-		create_svm_rbf,
-		create_svm_sigmoid,
-		create_knn,
-		create_naive_bayes,
-		create_decision_tree,
-		create_mlp
+		("logistic regression", create_logistic_regression),
+		("SGD (hinge loss)", create_sgd_hinge),
+		("SGD (log loss)", create_sgd_log),
+		("SGD (perceptron loss)", create_sgd_perceptron),
+		("LDA classifier", create_lda),
+		("QDA classifier", create_qda),
+		("SVM classifier (linear kernel)", create_svm_linear),
+		("SVM classifier (poly kernel)", create_svm_poly),
+		("SVM classifier (RBF kernel)", create_svm_rbf),
+		("SVM classifier (sigmoid kernel)", create_svm_sigmoid),
+		("k-NN classifier", create_knn),
+		("naive Bayes classifier", create_naive_bayes),
+		("decision tree classifier", create_decision_tree),
+		("MLP classifier", create_mlp)
 	]
 
-	for method in methods:
-		clf = method(X, y)
-		evaluate(clf, X, y)
+	for (name, create_model) in methods:
+		print "Evaluating %s..." % (name)
+		model = create_model()
+		evaluate(model, X, y)
 		print
