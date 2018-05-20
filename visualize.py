@@ -17,7 +17,7 @@ def rotate_xticklabels(angle):
 
 
 
-def transition_matrix(x, y, data):
+def contingency_table(x, y, data):
 	u = list(set(data[x]).union(set(data[y])))
 	T = pd.DataFrame(np.zeros((len(u), len(u))), index=u, columns=u, dtype=np.int32)
 
@@ -55,11 +55,11 @@ def plot_dist_output(df, X, y):
 
 
 
-def plot_transitions(df, X, y):
+def plot_contingency_tables(df, X, y):
 	for i in xrange(0, len(config["categorical"]), 2):
 		x = config["categorical"][i]
 		y = config["categorical"][i + 1]
-		T = transition_matrix(x, y, df)
+		T = contingency_table(x, y, df)
 
 		ax = sns.heatmap(T)
 		ax.set_title(x.split("_")[0])
@@ -143,7 +143,7 @@ if __name__ == "__main__":
 		("heatmap", plot_heatmap),
 		("feature distributions", plot_dist_input),
 		("output distribution", plot_dist_output),
-		("transition matrices", plot_transitions),
+		("contingency tables", plot_contingency_tables),
 		("correlation heatmap", plot_correlation_heatmap),
 		("correlation clustermap", plot_correlation_clustermap),
 		("pairwise feature distributions", plot_pairwise),
