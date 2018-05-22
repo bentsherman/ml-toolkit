@@ -61,10 +61,9 @@ def plot_contingency_tables(df, X, y):
 		y = config["categorical"][i + 1]
 		T = contingency_table(x, y, df)
 
-		ax = sns.heatmap(T)
-		ax.set_title(x.split("_")[0])
-		ax.set_ylabel(x.split("_")[-1])
-		ax.set_xlabel(y.split("_")[-1])
+		ax = sns.heatmap(T, annot=True, fmt="d")
+		ax.set_ylabel(x)
+		ax.set_xlabel(y)
 		rotate_xticklabels(45)
 		plt.show()
 
@@ -95,23 +94,30 @@ def plot_pairwise(df, X, y):
 
 
 def plot_tsne_2d(df, X, y):
-	classes = list(set(y))
-	y_cate = [classes.index(y_i) for y_i in y]
+	if y.dtype == "object":
+		classes = list(set(y))
+		colors = [classes.index(y_i) for y_i in y]
+	else:
+		colors = y
 
 	X_tsne = sklearn.manifold.TSNE(n_components=2).fit_transform(X)
-	plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y_cate, s=2)
+	plt.axis("off")
+	plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=colors, s=2)
 	plt.show()
 
 
 
 def plot_tsne_3d(df, X, y):
-	classes = list(set(y))
-	y_cate = [classes.index(y_i) for y_i in y]
+	if y.dtype == "object":
+		classes = list(set(y))
+		colors = [classes.index(y_i) for y_i in y]
+	else:
+		colors = y
 
 	X_tsne = sklearn.manifold.TSNE(n_components=3).fit_transform(X)
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection="3d")
-	ax.scatter(X_tsne[:, 0], X_tsne[:, 1], X_tsne[:, 2], c=y_cate, s=2)
+	ax.scatter(X_tsne[:, 0], X_tsne[:, 1], X_tsne[:, 2], c=colors, s=2)
 	plt.show()
 
 
@@ -133,7 +139,6 @@ if __name__ == "__main__":
 
 	# remove samples with high-variance output
 	output_sd = "%s_SD" % config["output"][0]
-
 	if output_sd in df.columns:
 		mask = df[output_sd] < 1.5
 		X = X[mask]
