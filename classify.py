@@ -1,7 +1,9 @@
+import itertools
 import json
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import scipy
 import scipy.stats
 import seaborn as sns
 import sklearn.discriminant_analysis
@@ -18,9 +20,69 @@ import sys
 
 
 
+def confusion_matrix(y_true, y_pred, classes):
+	cnf_matrix = sklearn.metrics.confusion_matrix(y_true, y_pred, labels=classes)
+
+	sns.heatmap(cnf_matrix, annot=True, fmt="d", xticklabels=classes, yticklabels=classes)
+	plt.ylabel("Expected")
+	plt.xlabel("Measured")
+	plt.show()
+
+
+
+def roc_curve(y_true, y_score, classes):
+	n_classes = len(classes)
+
+	# compute ROC curve and auc for each class
+	fpr = {}
+	tpr = {}
+	auc = {}
+
+	for i in xrange(n_classes):
+		fpr[i], tpr[i], _ = sklearn.metrics.roc_curve(y_true[:, i], y_score[:, i])
+		auc[i] = sklearn.metrics.auc(fpr[i], tpr[i])
+
+	# aggregate all false positive rates
+	all_fpr = np.unique(np.concatenate([fpr[i] for i in xrange(n_classes)]))
+
+	# interpolate all ROC curves at these points
+	mean_tpr = np.zeros_like(all_fpr)
+	for i in xrange(n_classes):
+		mean_tpr += scipy.interp(all_fpr, fpr[i], tpr[i])
+
+	# compute average tpr
+	mean_tpr /= n_classes
+
+	colors = itertools.cycle(["aqua", "darkorange", "cornflowerblue"])
+	for i, color in zip(xrange(n_classes), colors):
+		plt.plot(fpr[i], tpr[i], color=color, label="%s (area = %0.2f)" % (classes[i], auc[i]))
+
+	plt.plot([0, 1], [0, 1], "k--")
+	plt.xlim([0.0, 1.0])
+	plt.ylim([0.0, 1.05])
+	plt.xlabel("FPR")
+	plt.ylabel("TPR")
+	plt.title("Receiver operating characteristics")
+	plt.legend(loc="lower right")
+	plt.show()
+
+
+
 def evaluate(model, X, y):
+	# compute one-hot labels
+	classes = list(set(y))
+	classes.sort()
+
+	y_bin = sklearn.preprocessing.label_binarize(y, classes)
+
 	# predict output
-	y_pred = sklearn.model_selection.cross_val_predict(model, X, y, cv=5)
+	if hasattr(model, "decision_function"):
+		score_method = "decision_function"
+	else:
+		score_method = "predict_proba"
+
+	y_score = sklearn.model_selection.cross_val_predict(model, X, y, cv=5, n_jobs=-1, method=score_method)
+	y_pred = sklearn.model_selection.cross_val_predict(model, X, y, cv=5, n_jobs=-1)
 
 	# compute metrics
 	acc = sklearn.metrics.accuracy_score(y, y_pred)
@@ -29,13 +91,10 @@ def evaluate(model, X, y):
 	print "acc = %8.3f, f1 = %8.3f" % (acc, f1)
 
 	# plot confusion matrix
-	classes = list(set(y))
-	cnf_matrix = sklearn.metrics.confusion_matrix(y, y_pred, labels=classes)
+	confusion_matrix(y, y_pred, classes)
 
-	sns.heatmap(cnf_matrix, annot=True, fmt="d", xticklabels=classes, yticklabels=classes)
-	plt.ylabel("y")
-	plt.xlabel("y_pred")
-	plt.show()
+	# plot ROC curve
+	roc_curve(y_bin, y_score, classes)
 
 
 
