@@ -30,7 +30,25 @@ def confusion_matrix(y_true, y_pred, classes):
 
 
 
-def roc_curve(y_true, y_score, classes):
+def roc_curve(y_true, y_score):
+	# compute ROC curve and auc
+	fpr, tpr, _ = sklearn.metrics.roc_curve(y_true, y_score)
+	auc = sklearn.metrics.auc(fpr, tpr)
+
+	plt.plot(fpr, tpr, label="area = %0.2f" % (auc))
+
+	plt.plot([0, 1], [0, 1], "k--")
+	plt.xlim([0.0, 1.0])
+	plt.ylim([0.0, 1.05])
+	plt.xlabel("FPR")
+	plt.ylabel("TPR")
+	plt.title("Receiver operating characteristics")
+	plt.legend(loc="lower right")
+	plt.show()
+
+
+
+def roc_curve_multi(y_true, y_score, classes):
 	n_classes = len(classes)
 
 	# compute ROC curve and auc for each class
@@ -41,17 +59,6 @@ def roc_curve(y_true, y_score, classes):
 	for i in xrange(n_classes):
 		fpr[i], tpr[i], _ = sklearn.metrics.roc_curve(y_true[:, i], y_score[:, i])
 		auc[i] = sklearn.metrics.auc(fpr[i], tpr[i])
-
-	# aggregate all false positive rates
-	all_fpr = np.unique(np.concatenate([fpr[i] for i in xrange(n_classes)]))
-
-	# interpolate all ROC curves at these points
-	mean_tpr = np.zeros_like(all_fpr)
-	for i in xrange(n_classes):
-		mean_tpr += scipy.interp(all_fpr, fpr[i], tpr[i])
-
-	# compute average tpr
-	mean_tpr /= n_classes
 
 	colors = itertools.cycle(["aqua", "darkorange", "cornflowerblue"])
 	for i, color in zip(xrange(n_classes), colors):
@@ -94,7 +101,13 @@ def evaluate(model, X, y):
 	confusion_matrix(y, y_pred, classes)
 
 	# plot ROC curve
-	roc_curve(y_bin, y_score, classes)
+	if len(classes) == 2:
+		if y_score.ndim == 2:
+			y_score = y_score[:, 1]
+
+		roc_curve(y, y_score)
+	else:
+		roc_curve_multi(y_bin, y_score, classes)
 
 
 
