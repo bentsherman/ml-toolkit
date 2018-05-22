@@ -5,7 +5,6 @@ import pandas as pd
 import scipy.stats
 import seaborn as sns
 import sklearn.cluster
-import sklearn.manifold
 import sklearn.metrics
 import sklearn.mixture
 import sklearn.model_selection
@@ -31,11 +30,6 @@ def evaluate(model, X, y):
 	ami = sklearn.metrics.adjusted_mutual_info_score(y, y_pred)
 
 	print "ari = %8.3f, ami = %8.3f" % (ari, ami)
-
-	# plot t-SNE visualization
-	X_tsne = sklearn.manifold.TSNE().fit_transform(X)
-	plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y_cate, s=2)
-	plt.show()
 
 
 
