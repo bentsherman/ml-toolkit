@@ -18,7 +18,7 @@ import sys
 
 def evaluate(model, X, y):
 	# predict output
-	y_pred = sklearn.model_selection.cross_val_predict(model, X, y, cv=5)
+	y_pred = sklearn.model_selection.cross_val_predict(model, X, y, cv=5, n_jobs=-1)
 
 	# compute metrics
 	r, p = scipy.stats.pearsonr(y, y_pred)
@@ -117,9 +117,11 @@ if __name__ == "__main__":
 	X = pd.DataFrame(sklearn.preprocessing.scale(X), X.index, X.columns)
 
 	# remove samples with high-variance output
-	mask = df[config["output"][1]] < 1.5
-	X = X[mask]
-	y = y[mask]
+	output_sd = "%s_SD" % config["output"][0]
+	if output_sd in df.columns:
+		mask = df[output_sd] < 1.5
+		X = X[mask]
+		y = y[mask]
 
 	# evaluate each regressor
 	methods = [
