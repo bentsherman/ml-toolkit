@@ -1,4 +1,3 @@
-import itertools
 import json
 import matplotlib.pyplot as plt
 import numpy as np
@@ -60,9 +59,8 @@ def roc_curve_multi(y_true, y_score, classes):
 		fpr[i], tpr[i], _ = sklearn.metrics.roc_curve(y_true[:, i], y_score[:, i])
 		auc[i] = sklearn.metrics.auc(fpr[i], tpr[i])
 
-	colors = itertools.cycle(["aqua", "darkorange", "cornflowerblue"])
-	for i, color in zip(xrange(n_classes), colors):
-		plt.plot(fpr[i], tpr[i], color=color, label="%s (area = %0.2f)" % (classes[i], auc[i]))
+	for i in xrange(n_classes):
+		plt.plot(fpr[i], tpr[i], label="%s (area = %0.2f)" % (classes[i], auc[i]))
 
 	plt.plot([0, 1], [0, 1], "k--")
 	plt.xlim([0.0, 1.0])

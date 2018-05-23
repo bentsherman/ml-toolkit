@@ -46,6 +46,7 @@ if __name__ == "__main__":
 
 			# HACK: some sample files have duplicate rows
 			elif len(df) == num_features * 2:
+				print "warning: file '%s/%s' has duplicate rows" % (dir, f)
 				df = df.iloc[::2]
 
 			# make sure features are ordered the same

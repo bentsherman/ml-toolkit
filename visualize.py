@@ -39,6 +39,7 @@ def plot_heatmap(df, X, y):
 
 
 def plot_dist_input(df, X, y):
+	fig, ax = plt.subplots(figsize=(X.shape[1] / 2, 6))
 	sns.violinplot(data=X, bw=0.2, cut=1, linewidth=1)
 	rotate_xticklabels(45)
 	plt.show()
