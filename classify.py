@@ -91,7 +91,7 @@ def evaluate(model, X, y):
 
 	# compute metrics
 	acc = sklearn.metrics.accuracy_score(y, y_pred)
-	f1 = sklearn.metrics.f1_score(y, y_pred, average="micro")
+	f1 = sklearn.metrics.f1_score(y, y_pred, average="weighted")
 
 	print "acc = %8.3f, f1 = %8.3f" % (acc, f1)
 
@@ -175,7 +175,7 @@ def create_decision_tree():
 
 
 def create_mlp():
-	return sklearn.neural_network.MLPClassifier()
+	return sklearn.neural_network.MLPClassifier(max_iter=500)
 
 
 
