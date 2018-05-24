@@ -15,28 +15,34 @@ if __name__ == "__main__":
 	NUM_SAMPLES = int(sys.argv[3])
 
 	# get list of all subdirectories
-	dirs = ["%s/%s" % (INPUT_DIR, dir) for dir in os.listdir(INPUT_DIR)]
-	dirs = ["%s/training-data" % (dir) for dir in dirs if os.path.isdir(dir)]
+	dirs = [d for d in os.listdir(INPUT_DIR) if os.path.isdir("%s/%s" % (INPUT_DIR, d))]
+	dirs = ["%s/training-data" % (d) for d in dirs]
 
-	# HACK: reduce sample size to multiple of directories
-	NUM_SAMPLES = NUM_SAMPLES / len(dirs) * len(dirs)
+	# get list of all classes
+	classes = [d.split("-")[0] for d in dirs]
+	classes = list(set(classes))
 
-	# iterate through each subdirectory
+	# iterate through each class
 	num_features = 0
 	X = None
 	y = None
 	count = 0
 
-	for dir in dirs:
-		print dir
+	for i in xrange(len(classes)):
+		print classes[i]
 
-		label = dir.split("/")[-2].split("-")[0]
-		files = random.sample(os.listdir(dir), NUM_SAMPLES / len(dirs))
+		# get list of all files in class
+		class_dirs = ["%s/%s" % (INPUT_DIR, d) for d in dirs if d.split("-")[0] == classes[i]]
+		files = sum([["%s/%s" % (d, f) for f in os.listdir(d)] for d in class_dirs], [])
 
-		# iterate through each sample file
+		# sample files from list
+		k = NUM_SAMPLES * (i + 1) / len(classes) - NUM_SAMPLES * i / len(classes)
+		files = random.sample(files, k)
+
+		# append each sample to data frame
 		for f in files:
 			# read sample file
-			df = pd.read_csv("%s/%s" % (dir, f), sep="\t", header=None)
+			df = pd.read_csv(f, sep="\t", header=None)
 
 			# allocate X and y on first sample
 			if num_features == 0:
@@ -46,7 +52,7 @@ if __name__ == "__main__":
 
 			# HACK: some sample files have duplicate rows
 			elif len(df) == num_features * 2:
-				print "warning: file '%s/%s' has duplicate rows" % (dir, f)
+				print "warning: file '%s' has duplicate rows" % (f)
 				df = df.iloc[::2]
 
 			# make sure features are ordered the same
@@ -56,7 +62,7 @@ if __name__ == "__main__":
 
 			# append sample
 			X.values[count] = df[4]
-			y.values[count] = label
+			y.values[count] = classes[i]
 			count += 1
 
 	# save data matrix
