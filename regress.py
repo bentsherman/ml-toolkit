@@ -26,8 +26,12 @@ def evaluate(model, X, y):
 
 	print "r = %8.3f, r^2 = %8.3f" % (r, r2)
 
-	# plot correlation of predicted and expected output
-	sns.jointplot(y, y_pred, kind="reg")
+	# plot correlation of expected and predicted output
+	limits = (min(min(y), min(y_pred)), max(max(y), max(y_pred)))
+
+	sns.jointplot(y, y_pred, kind="reg", xlim=limits, ylim=limits)
+	plt.xlabel("Expected")
+	plt.ylabel("Measured")
 	plt.show()
 
 
