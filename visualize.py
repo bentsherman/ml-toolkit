@@ -7,7 +7,6 @@ import seaborn as sns
 import sklearn.manifold
 import sklearn.preprocessing
 import sys
-from matplotlib import colors as color_options
 
 
 
@@ -96,34 +95,25 @@ def plot_pairwise(df, X, y):
 
 
 def plot_tsne_2d(df, X, y):
-	if y.dtype == "object":
-		classes = list(set(y))
-		#colors = np.asarray([classes.index(y_i) for y_i in y])
-	# else:
-		#colors = np.asarray(y)
-
-	labels = np.asarray(y)
-
 	X_tsne = sklearn.manifold.TSNE(n_components=2).fit_transform(X)
 
-	# get the base colors from matplotlib and remove white 
-	# (since white is useless on white background)
-	color_opts = color_options.BASE_COLORS
-	if 'w' in color_opts:
-		del color_opts['w']
-
-	# assign a color to a class
-	colors = {}
-	for c, o in zip(classes, color_opts):
-		colors[c] = o
-
-	# plot each class with each color and label it for the legend
 	plt.axis("off")
-	for c in classes:
-		idxs = np.where(labels == c)[0]
-		plt.scatter(X_tsne[idxs, 0], X_tsne[idxs, 1], c=colors[c], s=2, label=c)
 
-	plt.legend()
+	if y.dtype == "object":
+		classes = list(set(y))
+		colors = np.asarray([classes.index(y_i) for y_i in y])
+
+		for c in classes:
+			idx = (y == c)
+			plt.scatter(X_tsne[idx, 0], X_tsne[idx, 1], s=3, label=c)
+
+		plt.legend()
+	else:
+		colors = np.asarray(y)
+
+		plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=colors, s=3)
+		# TODO: colorbar?
+
 	plt.show()
 
 
@@ -138,7 +128,7 @@ def plot_tsne_3d(df, X, y):
 	X_tsne = sklearn.manifold.TSNE(n_components=3).fit_transform(X)
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection="3d")
-	ax.scatter(X_tsne[:, 0], X_tsne[:, 1], X_tsne[:, 2], c=colors, s=2)
+	ax.scatter(X_tsne[:, 0], X_tsne[:, 1], X_tsne[:, 2], c=colors, s=3)
 	plt.show()
 
 
@@ -166,15 +156,15 @@ if __name__ == "__main__":
 		y = y[mask]
 
 	methods = [
-		# ("heatmap", plot_heatmap),
-		# ("feature distributions", plot_dist_input),
-		# ("output distribution", plot_dist_output),
-		# ("contingency tables", plot_contingency_tables),
-		# ("correlation heatmap", plot_correlation_heatmap),
-		# ("correlation clustermap", plot_correlation_clustermap),
-		# ("pairwise feature distributions", plot_pairwise),
+		("heatmap", plot_heatmap),
+		("feature distributions", plot_dist_input),
+		("output distribution", plot_dist_output),
+		("contingency tables", plot_contingency_tables),
+		("correlation heatmap", plot_correlation_heatmap),
+		("correlation clustermap", plot_correlation_clustermap),
+		("pairwise feature distributions", plot_pairwise),
 		("2-D t-SNE embedding", plot_tsne_2d),
-		#("3-D t-SNE embedding", plot_tsne_3d)
+		("3-D t-SNE embedding", plot_tsne_3d)
 	]
 
 	for (name, method) in methods:
