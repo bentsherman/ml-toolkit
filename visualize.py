@@ -32,7 +32,8 @@ def contingency_table(x, y, data):
 
 
 def plot_heatmap(df, X, y):
-	sns.heatmap(X)
+	fig, ax = plt.subplots(figsize=(X.shape[1] / 3, 6))
+	sns.heatmap(X, xticklabels=1)
 	rotate_xticklabels(45)
 	plt.show()
 
@@ -71,16 +72,16 @@ def plot_contingency_tables(df, X, y):
 
 
 def plot_correlation_heatmap(df, X, y):
-	corr = X.corr()
-	sns.heatmap(corr)
+	fig, ax = plt.subplots(figsize=(X.shape[1] / 3, X.shape[1] / 3))
+	sns.heatmap(X.corr(), xticklabels=1, yticklabels=1)
 	rotate_xticklabels(45)
 	plt.show()
 
 
 
 def plot_correlation_clustermap(df, X, y):
-	corr = X.corr()
-	sns.clustermap(corr)
+	# fig, ax = plt.subplots(figsize=(X.shape[1] / 3, X.shape[1] / 3))
+	sns.clustermap(X.corr(), xticklabels=1, yticklabels=1)
 	rotate_xticklabels(45)
 	plt.show()
 
