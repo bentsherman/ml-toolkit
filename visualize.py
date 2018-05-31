@@ -101,7 +101,6 @@ def plot_tsne_2d(df, X, y):
 
 	if y.dtype == "object":
 		classes = list(set(y))
-		colors = np.asarray([classes.index(y_i) for y_i in y])
 
 		for c in classes:
 			idx = (y == c)
@@ -109,9 +108,7 @@ def plot_tsne_2d(df, X, y):
 
 		plt.legend()
 	else:
-		colors = np.asarray(y)
-
-		plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=colors, s=3)
+		plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y, s=3)
 		# TODO: colorbar?
 
 	plt.show()
@@ -119,16 +116,22 @@ def plot_tsne_2d(df, X, y):
 
 
 def plot_tsne_3d(df, X, y):
-	if y.dtype == "object":
-		classes = list(set(y))
-		colors = [classes.index(y_i) for y_i in y]
-	else:
-		colors = y
-
 	X_tsne = sklearn.manifold.TSNE(n_components=3).fit_transform(X)
+
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection="3d")
-	ax.scatter(X_tsne[:, 0], X_tsne[:, 1], X_tsne[:, 2], c=colors, s=3)
+
+	if y.dtype == "object":
+		classes = list(set(y))
+
+		for c in classes:
+			idx = (y == c)
+			ax.scatter(X_tsne[idx, 0], X_tsne[idx, 1], X_tsne[idx, 2], s=3, label=c)
+
+		plt.legend()
+	else:
+		ax.scatter(X_tsne[:, 0], X_tsne[:, 1], X_tsne[:, 2], c=y, s=3)
+
 	plt.show()
 
 
