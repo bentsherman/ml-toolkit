@@ -6,7 +6,7 @@ import sys
 
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
-		print "usage: python generate-config.py [infile] [outfile]"
+		print("usage: python generate-config.py [infile] [outfile]")
 		sys.exit(1)
 
 	# load data frame

@@ -8,7 +8,7 @@ import sys
 if __name__ == "__main__":
 	# parse command-line arguments
 	if len(sys.argv) != 5:
-		print "usage: python create-sid.py [dir] [num-samples] [data-file] [config-file]"
+		print("usage: python create-sid.py [dir] [num-samples] [data-file] [config-file]")
 		sys.exit(1)
 
 	INPUT_DIR = sys.argv[1]
@@ -31,7 +31,7 @@ if __name__ == "__main__":
 	count = 0
 
 	for i in xrange(len(classes)):
-		print classes[i]
+		print(classes[i])
 
 		# get list of all files in class
 		class_dirs = ["%s/%s" % (INPUT_DIR, d) for d in dirs if d.split("-")[0] == classes[i]]
@@ -54,12 +54,12 @@ if __name__ == "__main__":
 
 			# HACK: some sample files have duplicate rows
 			elif len(df) == num_features * 2:
-				print "warning: file '%s' has duplicate rows" % (f)
+				print("warning: file '%s' has duplicate rows" % (f))
 				df = df.iloc[::2]
 
 			# make sure features are ordered the same
 			elif (X.columns != df[2].values).all():
-				print "error: mismatched features"
+				print("error: mismatched features")
 				sys.exit(1)
 
 			# append sample

@@ -8,7 +8,7 @@ import sys
 if __name__ == "__main__":
 	# parse command-line arguments
 	if len(sys.argv) != 4:
-		print "usage: python create-tdb.py [excel-file] [data-file] [config-file]"
+		print("usage: python create-tdb.py [excel-file] [data-file] [config-file]")
 		sys.exit(1)
 
 	EXCELFILE = sys.argv[1]

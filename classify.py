@@ -94,7 +94,7 @@ def evaluate(model, X, y):
 	acc = sklearn.metrics.accuracy_score(y, y_pred)
 	f1 = sklearn.metrics.f1_score(y, y_pred, average="weighted")
 
-	print "acc = %8.3f, f1 = %8.3f" % (acc, f1)
+	print("acc = %8.3f, f1 = %8.3f" % (acc, f1))
 
 	# plot confusion matrix
 	confusion_matrix(y, y_pred, classes)
@@ -202,7 +202,7 @@ def create_mlp():
 
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
-		print "usage: python regress.py [infile] [config]"
+		print("usage: python regress.py [infile] [config]")
 		sys.exit(1)
 
 	config = json.load(open(sys.argv[2]))
@@ -239,7 +239,7 @@ if __name__ == "__main__":
 	]
 
 	for (name, create_model) in methods:
-		print "Evaluating %s..." % (name)
+		print("Evaluating %s..." % (name))
 		model = create_model()
 		evaluate(model, X, y)
 		print

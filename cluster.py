@@ -29,7 +29,7 @@ def evaluate(model, X, y):
 	ari = sklearn.metrics.adjusted_rand_score(y, y_pred)
 	ami = sklearn.metrics.adjusted_mutual_info_score(y, y_pred)
 
-	print "ari = %8.3f, ami = %8.3f" % (ari, ami)
+	print("ari = %8.3f, ami = %8.3f" % (ari, ami))
 
 
 
@@ -85,7 +85,7 @@ def create_bayesian_gaussian_mixture(n_clusters):
 
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
-		print "usage: python regress.py [infile] [config]"
+		print("usage: python regress.py [infile] [config]")
 		sys.exit(1)
 
 	config = json.load(open(sys.argv[2]))
@@ -114,7 +114,7 @@ if __name__ == "__main__":
 	]
 
 	for (name, create_model) in methods:
-		print "Evaluating %s..." % (name)
+		print("Evaluating %s..." % (name))
 		model = create_model(n_clusters)
 		evaluate(model, X, y)
 		print

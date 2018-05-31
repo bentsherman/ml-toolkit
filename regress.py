@@ -25,7 +25,7 @@ def evaluate(model, X, y):
 	r, p = scipy.stats.pearsonr(y, y_pred)
 	r2 = sklearn.metrics.r2_score(y, y_pred)
 
-	print "r = %8.3f, r^2 = %8.3f" % (r, r2)
+	print("r = %8.3f, r^2 = %8.3f" % (r, r2))
 
 	# plot correlation of expected and predicted output
 	limits = (min(min(y), min(y_pred)), max(max(y), max(y_pred)))
@@ -127,7 +127,7 @@ def create_mlp():
 
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
-		print "usage: python regress.py [infile] [config]"
+		print("usage: python regress.py [infile] [config]")
 		sys.exit(1)
 
 	config = json.load(open(sys.argv[2]))
@@ -170,7 +170,7 @@ if __name__ == "__main__":
 	]
 
 	for (name, create_model) in methods:
-		print "Evaluating %s..." % (name)
+		print("Evaluating %s..." % (name))
 		model = create_model()
 		evaluate(model, X, y)
 		print

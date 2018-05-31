@@ -139,7 +139,7 @@ def plot_tsne_3d(df, X, y):
 
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
-		print "usage: python visualize.py [infile] [config]"
+		print("usage: python visualize.py [infile] [config]")
 		sys.exit(1)
 
 	config = json.load(open(sys.argv[2]))
@@ -172,5 +172,5 @@ if __name__ == "__main__":
 	]
 
 	for (name, method) in methods:
-		print "Plotting %s..." % (name)
+		print("Plotting %s..." % (name))
 		method(df, X, y)
