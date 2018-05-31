@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import os
 import pandas as pd
@@ -6,13 +7,14 @@ import sys
 
 if __name__ == "__main__":
 	# parse command-line arguments
-	if len(sys.argv) != 4:
-		print "usage: python extract-sid.py [dir] [outfile] [num-samples]"
+	if len(sys.argv) != 5:
+		print "usage: python create-sid.py [dir] [num-samples] [data-file] [config-file]"
 		sys.exit(1)
 
 	INPUT_DIR = sys.argv[1]
-	OUTFILE = sys.argv[2]
-	NUM_SAMPLES = int(sys.argv[3])
+	NUM_SAMPLES = int(sys.argv[2])
+	DATAFILE = sys.argv[3]
+	CONFIGFILE = sys.argv[4]
 
 	# get list of all subdirectories
 	dirs = [d for d in os.listdir(INPUT_DIR) if os.path.isdir("%s/%s" % (INPUT_DIR, d))]
@@ -67,4 +69,16 @@ if __name__ == "__main__":
 
 	# save data matrix
 	df = X.join(y)
-	df.to_csv(OUTFILE, sep="\t")
+	df.to_csv(DATAFILE, sep="\t")
+
+	# initialize config object
+	config = {
+		"numerical": X.columns.tolist(),
+		"categorical": [],
+		"output": y.columns.tolist()
+	}
+
+	# save config file
+	configfile = open(CONFIGFILE, "w")
+	json.dump(config, configfile, indent=2)
+	configfile.close()
