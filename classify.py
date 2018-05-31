@@ -6,6 +6,7 @@ import scipy
 import scipy.stats
 import seaborn as sns
 import sklearn.discriminant_analysis
+import sklearn.ensemble
 import sklearn.linear_model
 import sklearn.metrics
 import sklearn.model_selection
@@ -174,6 +175,26 @@ def create_decision_tree():
 
 
 
+def create_bagging():
+	return sklearn.ensemble.BaggingClassifier()
+
+
+
+def create_random_forest():
+	return sklearn.ensemble.RandomForestClassifier()
+
+
+
+def create_ada_boost():
+	return sklearn.ensemble.AdaBoostClassifier()
+
+
+
+def create_gradient_boosting():
+	return sklearn.ensemble.GradientBoostingClassifier()
+
+
+
 def create_mlp():
 	return sklearn.neural_network.MLPClassifier(max_iter=500)
 
@@ -210,6 +231,10 @@ if __name__ == "__main__":
 		("k-NN classifier", create_knn),
 		("naive Bayes classifier", create_naive_bayes),
 		("decision tree classifier", create_decision_tree),
+		("Bagging classifier", create_bagging),
+		("random forest classifier", create_random_forest),
+		("AdaBoost classifier", create_ada_boost),
+		("gradient tree boosting classifier", create_gradient_boosting),
 		("MLP classifier", create_mlp)
 	]
 

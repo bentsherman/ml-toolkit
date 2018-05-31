@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import scipy.stats
 import seaborn as sns
+import sklearn.ensemble
 import sklearn.kernel_ridge
 import sklearn.linear_model
 import sklearn.metrics
@@ -99,6 +100,26 @@ def create_decision_tree():
 
 
 
+def create_bagging():
+	return sklearn.ensemble.BaggingRegressor()
+
+
+
+def create_random_forest():
+	return sklearn.ensemble.RandomForestRegressor()
+
+
+
+def create_ada_boost():
+	return sklearn.ensemble.AdaBoostRegressor()
+
+
+
+def create_gradient_boosting():
+	return sklearn.ensemble.GradientBoostingRegressor()
+
+
+
 def create_mlp():
 	return sklearn.neural_network.MLPRegressor(hidden_layer_sizes=(30,), max_iter=500)
 
@@ -129,19 +150,23 @@ if __name__ == "__main__":
 
 	# evaluate each regressor
 	methods = [
-		("linear regression", create_linear),
-		("ridge regression", create_ridge),
-		("lasso regression", create_lasso),
-		("elastic net regression", create_elastic_net),
-		("Bayesian ridge regression", create_bayesian_ridge),
-		("SGD regression", create_sgd),
-		("Polynomial regression", create_polynomial),
-		("Kernel ridge regression", create_kernel_ridge),
-		("SVM regression (linear kernel)", create_svm_linear),
-		("SVM regression (polynomial kernel)", create_svm_poly),
-		("SVM regression (RBF kernel)", create_svm_rbf),
-		("decision tree regression", create_decision_tree),
-		("MLP regression", create_mlp)
+		("linear regressor", create_linear),
+		("ridge regressor", create_ridge),
+		("lasso regressor", create_lasso),
+		("elastic net regressor", create_elastic_net),
+		("Bayesian ridge regressor", create_bayesian_ridge),
+		("SGD regressor", create_sgd),
+		("Polynomial regressor", create_polynomial),
+		("Kernel ridge regressor", create_kernel_ridge),
+		("SVM regressor (linear kernel)", create_svm_linear),
+		("SVM regressor (polynomial kernel)", create_svm_poly),
+		("SVM regressor (RBF kernel)", create_svm_rbf),
+		("decision tree regressor", create_decision_tree),
+		("Bagging regressor", create_bagging),
+		("random forest regressor", create_random_forest),
+		("AdaBoost regressor", create_ada_boost),
+		("gradient tree boosting regressor", create_gradient_boosting),
+		("MLP regressor", create_mlp)
 	]
 
 	for (name, create_model) in methods:
