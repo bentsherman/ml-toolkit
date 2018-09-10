@@ -56,11 +56,11 @@ def roc_curve_multi(y_true, y_score, classes):
 	tpr = {}
 	auc = {}
 
-	for i in xrange(n_classes):
+	for i in range(n_classes):
 		fpr[i], tpr[i], _ = sklearn.metrics.roc_curve(y_true[:, i], y_score[:, i])
 		auc[i] = sklearn.metrics.auc(fpr[i], tpr[i])
 
-	for i in xrange(n_classes):
+	for i in range(n_classes):
 		plt.plot(fpr[i], tpr[i], label="%s (area = %0.2f)" % (classes[i], auc[i]))
 
 	plt.plot([0, 1], [0, 1], "k--")
@@ -91,10 +91,13 @@ def evaluate(model, X, y):
 	y_pred = sklearn.model_selection.cross_val_predict(model, X, y, cv=5, n_jobs=-1)
 
 	# compute metrics
-	acc = sklearn.metrics.accuracy_score(y, y_pred)
-	f1 = sklearn.metrics.f1_score(y, y_pred, average="weighted")
+	metrics = [
+		("acc", sklearn.metrics.accuracy_score(y, y_pred)),
+		("f1", sklearn.metrics.f1_score(y, y_pred, average="weighted"))
+	]
 
-	print("acc = %8.3f, f1 = %8.3f" % (acc, f1))
+	for (name, value) in metrics:
+		print("%4s = %8.3f" % (name, value))
 
 	# plot confusion matrix
 	confusion_matrix(y, y_pred, classes)
@@ -208,7 +211,7 @@ if __name__ == "__main__":
 	config = json.load(open(sys.argv[2]))
 
 	# load data, extract X and y
-	df = pd.read_csv(sys.argv[1], sep="\t")
+	df = pd.read_table(sys.argv[1])
 	df_cate = df[config["categorical"]]
 	X = df[config["numerical"]]
 	y = df[config["output"][0]]

@@ -21,7 +21,7 @@ def contingency_table(x, y, data):
 	u = list(set(data[x]).union(set(data[y])))
 	T = pd.DataFrame(np.zeros((len(u), len(u))), index=u, columns=u, dtype=np.int32)
 
-	for k in xrange(len(data)):
+	for k in range(len(data)):
 		i = u.index(data[x][k])
 		j = u.index(data[y][k])
 
@@ -58,7 +58,7 @@ def plot_dist_output(df, X, y):
 
 
 def plot_contingency_tables(df, X, y):
-	for i in xrange(0, len(config["categorical"]), 2):
+	for i in range(0, len(config["categorical"]), 2):
 		x = config["categorical"][i]
 		y = config["categorical"][i + 1]
 		T = contingency_table(x, y, df)
@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
 	config = json.load(open(sys.argv[2]))
 
-	df = pd.read_csv(sys.argv[1], sep="\t")
+	df = pd.read_table(sys.argv[1])
 	df_cate = df[config["categorical"]]
 	X = df[config["numerical"]]
 	y = df[config["output"][0]]

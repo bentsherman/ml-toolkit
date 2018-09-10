@@ -30,7 +30,7 @@ if __name__ == "__main__":
 	y = None
 	count = 0
 
-	for i in xrange(len(classes)):
+	for i in range(len(classes)):
 		print(classes[i])
 
 		# get list of all files in class
@@ -44,7 +44,7 @@ if __name__ == "__main__":
 		# append each sample to data frame
 		for f in files:
 			# read sample file
-			df = pd.read_csv(f, sep="\t", header=None)
+			df = pd.read_table(f, header=None)
 
 			# allocate X and y on first sample
 			if num_features == 0:

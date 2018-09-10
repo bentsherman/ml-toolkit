@@ -26,10 +26,13 @@ def evaluate(model, X, y):
 		y_pred = model.predict(X)
 
 	# compute metrics
-	ari = sklearn.metrics.adjusted_rand_score(y, y_pred)
-	ami = sklearn.metrics.adjusted_mutual_info_score(y, y_pred)
+	metrics = [
+		("ari", sklearn.metrics.adjusted_rand_score(y, y_pred)),
+		("ami", sklearn.metrics.adjusted_mutual_info_score(y, y_pred))
+	]
 
-	print("ari = %8.3f, ami = %8.3f" % (ari, ami))
+	for (name, value) in metrics:
+		print("%4s = %8.3f" % (name, value))
 
 
 
@@ -91,7 +94,7 @@ if __name__ == "__main__":
 	config = json.load(open(sys.argv[2]))
 
 	# load data, extract X and y
-	df = pd.read_csv(sys.argv[1], sep="\t")
+	df = pd.read_table(sys.argv[1])
 	df_cate = df[config["categorical"]]
 	X = df[config["numerical"]]
 	y = df[config["output"][0]]
