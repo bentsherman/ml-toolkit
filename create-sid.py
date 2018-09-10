@@ -44,26 +44,26 @@ if __name__ == "__main__":
 		# append each sample to data frame
 		for f in files:
 			# read sample file
-			df = pd.read_table(f, header=None)
+			sample = pd.read_table(f, header=None)
 
 			# allocate X and y on first sample
 			if num_features == 0:
-				num_features = len(df)
-				X = pd.DataFrame(np.empty((NUM_SAMPLES, num_features), dtype=np.float32), None, df[2].values)
+				num_features = len(sample)
+				X = pd.DataFrame(np.empty((NUM_SAMPLES, num_features), dtype=np.float32), None, sample[2].values)
 				y = pd.DataFrame(np.empty((NUM_SAMPLES, 1), dtype=object), None, ["structure"])
 
 			# HACK: some sample files have duplicate rows
-			elif len(df) == num_features * 2:
+			elif len(sample) == num_features * 2:
 				print("warning: file '%s' has duplicate rows" % (f))
-				df = df.iloc[::2]
+				sample = sample.iloc[::2]
 
 			# make sure features are ordered the same
-			elif (X.columns != df[2].values).all():
+			elif (X.columns != sample[2].values).all():
 				print("error: mismatched features")
 				sys.exit(1)
 
 			# append sample
-			X.values[count] = df[4]
+			X.values[count] = sample[4]
 			y.values[count] = classes[i]
 			count += 1
 
