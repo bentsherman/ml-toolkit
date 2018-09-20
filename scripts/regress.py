@@ -22,10 +22,13 @@ def evaluate(model, X, y):
 	y_pred = sklearn.model_selection.cross_val_predict(model, X, y, cv=5, n_jobs=-1)
 
 	# compute metrics
-	r, p = scipy.stats.pearsonr(y, y_pred)
-	r2 = sklearn.metrics.r2_score(y, y_pred)
+	metrics = [
+		("ev", sklearn.metrics.explained_variance_score(y, y_pred)),
+		("r^2", sklearn.metrics.r2_score(y, y_pred))
+	]
 
-	print("r = %8.3f, r^2 = %8.3f" % (r, r2))
+	for (name, value) in metrics:
+		print("%4s = %8.3f" % (name, value))
 
 	# plot correlation of expected and predicted output
 	limits = (min(min(y), min(y_pred)), max(max(y), max(y_pred)))
