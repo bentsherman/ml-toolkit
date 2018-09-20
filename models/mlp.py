@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 class MLP:
     def __init__(self, lr=0.001, epochs=75, h_units=[512,256,128], \
         batch_size=16, disp_step=1, n_input=40, \
-        n_classes=53, dropout=0, load=0, save=0, confusion=0, roc = 0, verbose=0):
+        n_classes=4, dropout=0, load=0, save=0, confusion=0, roc = 0, verbose=0):
 
         self.lr = lr
         self.epochs = epochs
@@ -75,9 +75,9 @@ class MLP:
         biases['out'] = tf.get_variable('out_b', shape=[self.n_classes], initializer=tf.contrib.layers.xavier_initializer())
 
         # preprocess data
-        maxabsscaler = preprocessing.MaxAbsScaler()
-        dataset.train.data = maxabsscaler.fit_transform(dataset.train.data)
-        dataset.test.data = maxabsscaler.fit_transform(dataset.test.data)
+        # maxabsscaler = preprocessing.MaxAbsScaler()
+        # dataset.train.data = maxabsscaler.fit_transform(dataset.train.data)
+        # dataset.test.data = maxabsscaler.fit_transform(dataset.test.data)
 
         # Construct model
         pred = self.multilayer_perceptron(x, weights, biases)
@@ -96,7 +96,7 @@ class MLP:
         sess.run(init)
 
         if self.load:
-            saver.restore(sess, '../checkpoints/mlp')
+            saver.restore(sess, '/tmp/mlp')
 
         # Training cycle
         for epoch in range(self.epochs):
@@ -116,7 +116,7 @@ class MLP:
                 print("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(avg_cost))
 
         if self.save:
-            saver.save(sess, "../checkpoints/mlp")
+            saver.save(sess, "/tmp/mlp")
 
         # Test model
         correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))

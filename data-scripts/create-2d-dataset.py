@@ -51,5 +51,5 @@ if __name__ == "__main__":
 
 	# save output files
 	np.save(OUTPUT_NAME + '_samples.npy', np_samples)
-	np.save(OUTPUT_NAME + '_labels.npy', np_samples)
+	np.save(OUTPUT_NAME + '_labels.npy', np_labels)
 
