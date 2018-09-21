@@ -29,6 +29,7 @@ sys.path.append(os.path.dirname(os.getcwd()))
 sys.path.append(os.getcwd())
 
 from models.mlp import MLP
+from utils.DataContainer import DataContainer as DC
 
 
 
@@ -38,11 +39,17 @@ if __name__ == '__main__':
 	#Parse Arguments
 	parser = argparse.ArgumentParser(description='Run classification on specified dataset, \
 		subset of genes, or a random set')
-	parser.add_argument('--dataset', help='dataset to be used', type=str, required=True)
-	parser.add_argument('--labels', help='labels corresponding to dataset', type=str, required=True)
+	parser.add_argument('--dataset', help='dataset to be used (numpy format)', type=str, required=True)
+	parser.add_argument('--labels', help='labels corresponding to dataset (numpy format)', type=str, required=True)
 
 	args = parser.parse_args()
 
+	print('loading numpy data...')
+	data = np.load(args.dataset)
+	labels = np.load(args.labels)
 
+	print('converting to DataContainer format...')
+	dc = DC(data=data, labels=labels)
 
-
+	print dc.train.data.shape
+	print dc.train.labels.shape

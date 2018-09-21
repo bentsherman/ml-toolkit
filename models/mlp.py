@@ -107,7 +107,7 @@ class MLP:
             for i in range(total_batch):
                 batch_x, batch_y = dataset.train.next_batch(self.batch_size, i)
 
-                 _, c, r = sess.run([optimizer, cost, result], feed_dict={x: batch_x, y: batch_y})
+                _, c, r = sess.run([optimizer, cost, result], feed_dict={x: batch_x, y: batch_y})
 
                 # Compute average loss
                 avg_cost += c / total_batch
