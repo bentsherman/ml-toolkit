@@ -32,15 +32,17 @@ from models.mlp import MLP
 
 
 
+
 if __name__ == '__main__':
 
 	#Parse Arguments
 	parser = argparse.ArgumentParser(description='Run classification on specified dataset, \
 		subset of genes, or a random set')
 	parser.add_argument('--dataset', help='dataset to be used', type=str, required=True)
-	parser.add_argument('--gene_list', help='list of genes in dataset (same order as dataset)', \
-		type=str, required=True)
+	parser.add_argument('--labels', help='labels corresponding to dataset', type=str, required=True)
 
 	args = parser.parse_args()
+
+
 
 
