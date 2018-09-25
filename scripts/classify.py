@@ -20,23 +20,47 @@ import sys
 
 
 
-def confusion_matrix(y_true, y_pred, classes):
+def confusion_matrix(y_true, y_score, y_pred, classes):
 	cnf_matrix = sklearn.metrics.confusion_matrix(y_true, y_pred, labels=classes)
 
 	sns.heatmap(cnf_matrix, annot=True, fmt="d", xticklabels=classes, yticklabels=classes)
 	plt.ylabel("Expected")
 	plt.xlabel("Measured")
+	plt.title("Confusion Matrix")
 	plt.show()
 
 
 
-def roc_curve(y_true, y_score):
-	# compute FPR, TPR, and auc
-	fpr, tpr, _ = sklearn.metrics.roc_curve(y_true, y_score)
-	auc = sklearn.metrics.auc(fpr, tpr)
+def roc_curve(y_true, y_score, y_pred, classes):
+	n_classes = len(classes)
 
-	# plot ROC curve
-	plt.plot(fpr, tpr, label="area = %0.2f" % (auc))
+	# determine whether labels are multi-class
+	if n_classes == 2:
+		# condense scores to single-class scores
+		y_score = y_score[:, 1]
+
+		# compute FPR, TPR, and auc
+		fpr, tpr, _ = sklearn.metrics.roc_curve(y_true, y_score)
+		auc = sklearn.metrics.auc(fpr, tpr)
+
+		# plot ROC curve
+		plt.plot(fpr, tpr, label="area = %0.2f" % (auc))
+	else:
+		# compute one-hot labels
+		y_bin = sklearn.preprocessing.label_binarize(y_true, classes)
+
+		# compute FPR, TPR, and auc for each class
+		fpr = {}
+		tpr = {}
+		auc = {}
+
+		for i in range(n_classes):
+			fpr[i], tpr[i], _ = sklearn.metrics.roc_curve(y_bin[:, i], y_score[:, i])
+			auc[i] = sklearn.metrics.auc(fpr[i], tpr[i])
+
+		# plot ROC curve for each class
+		for i in range(n_classes):
+			plt.plot(fpr[i], tpr[i], label="%s (area = %0.2f)" % (classes[i], auc[i]))
 
 	plt.plot([0, 1], [0, 1], "k--")
 	plt.xlim([0.0, 1.0])
@@ -49,37 +73,8 @@ def roc_curve(y_true, y_score):
 
 
 
-def roc_curve_multi(y_true, y_score, classes):
+def precision_recall_curve(y_true, y_score, y_pred, classes):
 	n_classes = len(classes)
-
-	# compute FPR, TPR, and auc for each class
-	fpr = {}
-	tpr = {}
-	auc = {}
-
-	for i in range(n_classes):
-		fpr[i], tpr[i], _ = sklearn.metrics.roc_curve(y_true[:, i], y_score[:, i])
-		auc[i] = sklearn.metrics.auc(fpr[i], tpr[i])
-
-	# plot ROC curve for each class
-	for i in range(n_classes):
-		plt.plot(fpr[i], tpr[i], label="%s (area = %0.2f)" % (classes[i], auc[i]))
-
-	plt.plot([0, 1], [0, 1], "k--")
-	plt.xlim([0.0, 1.0])
-	plt.ylim([0.0, 1.05])
-	plt.xlabel("FPR")
-	plt.ylabel("TPR")
-	plt.title("Receiver operating characteristics")
-	plt.legend(loc="lower right")
-	plt.show()
-
-
-
-def precision_recall_curve(y_true, y_score):
-	# compute precision, recall, and average precision
-	precision, recall, _ = sklearn.metrics.precision_recall_curve(y_true, y_score)
-	average_precision = sklearn.metrics.average_precision_score(y_true, y_score)
 
 	# plot iso-f1 curves
 	f1_scores = np.linspace(0.2, 0.8, num=4)
@@ -90,43 +85,33 @@ def precision_recall_curve(y_true, y_score):
 		plt.plot(x[y >= 0], y[y >= 0], color="gray", alpha=0.2)
 		plt.annotate("f1=%0.1f" % (f1_score), xy=(0.9, y[45] + 0.02))
 
-	# plot precision-recall curve
-	plt.plot(recall, precision, label="area = %0.2f" % (average_precision))
+	# determine whether labels are multi-class
+	if n_classes == 2:
+		# condense scores to single-class scores
+		y_score = y_score[:, 1]
 
-	plt.xlim([0.0, 1.0])
-	plt.ylim([0.0, 1.05])
-	plt.xlabel("Recall")
-	plt.ylabel("Precision")
-	plt.title("Precision-Recall")
-	plt.legend(loc="lower left")
-	plt.show()
+		# compute precision, recall, and average precision
+		precision, recall, _ = sklearn.metrics.precision_recall_curve(y_true, y_score)
+		average_precision = sklearn.metrics.average_precision_score(y_true, y_score)
 
+		# plot precision-recall curve
+		plt.plot(recall, precision, label="area = %0.2f" % (average_precision))
+	else:
+		# compute one-hot labels
+		y_bin = sklearn.preprocessing.label_binarize(y_true, classes)
 
+		# compute precision, recall, and average precision for each class
+		precision = {}
+		recall = {}
+		average_precision = {}
 
-def precision_recall_curve_multi(y_true, y_score, classes):
-	n_classes = len(classes)
+		for i in range(n_classes):
+			precision[i], recall[i], _ = sklearn.metrics.precision_recall_curve(y_bin[:, i], y_score[:, i])
+			average_precision[i] = sklearn.metrics.average_precision_score(y_bin[:, i], y_score[:, i])
 
-	# compute precision, recall, and average precision for each class
-	precision = {}
-	recall = {}
-	average_precision = {}
-
-	for i in range(n_classes):
-		precision[i], recall[i], _ = sklearn.metrics.precision_recall_curve(y_true[:, i], y_score[:, i])
-		average_precision[i] = sklearn.metrics.average_precision_score(y_true[:, i], y_score[:, i])
-
-	# plot iso-f1 curves
-	f1_scores = np.linspace(0.2, 0.8, num=4)
-
-	for f1_score in f1_scores:
-		x = np.linspace(0.01, 1)
-		y = f1_score * x / (2 * x - f1_score)
-		plt.plot(x[y >= 0], y[y >= 0], color="gray", alpha=0.2)
-		plt.annotate("f1=%0.1f" % (f1_score), xy=(0.9, y[45] + 0.02))
-
-	# plot precision-recall curve for each class
-	for i in range(n_classes):
-		plt.plot(recall[i], precision[i], label="%s (area = %0.2f)" % (classes[i], average_precision[i]))
+		# plot precision-recall curve for each class
+		for i in range(n_classes):
+			plt.plot(recall[i], precision[i], label="%s (area = %0.2f)" % (classes[i], average_precision[i]))
 
 	plt.xlim([0.0, 1.0])
 	plt.ylim([0.0, 1.05])
@@ -143,8 +128,6 @@ def evaluate(model, X, y):
 	classes = list(set(y))
 	classes.sort()
 
-	y_bin = sklearn.preprocessing.label_binarize(y, classes)
-
 	# predict output
 	if hasattr(model, "decision_function"):
 		score_method = "decision_function"
@@ -160,29 +143,23 @@ def evaluate(model, X, y):
 		("f1", sklearn.metrics.f1_score(y, y_pred, average="weighted"))
 	]
 
+	print("  scores:")
+
 	for (name, value) in metrics:
-		print("%4s = %8.3f" % (name, value))
+		print("    %-4s = %8.3f" % (name, value))
 
-	# plot confusion matrix
-	confusion_matrix(y, y_pred, classes)
+	# create plots
+	plots = [
+		("confusion matrix", confusion_matrix),
+		("roc curve", roc_curve),
+		("precision-recall curve", precision_recall_curve)
+	]
 
-	# plot ROC curve
-	if len(classes) == 2:
-		if y_score.ndim == 2:
-			y_score = y_score[:, 1]
+	print("  plots:")
 
-		roc_curve(y, y_score)
-	else:
-		roc_curve_multi(y_bin, y_score, classes)
-
-	# plot precision-recall curve
-	if len(classes) == 2:
-		if y_score.ndim == 2:
-			y_score = y_score[:, 1]
-
-		precision_recall_curve(y, y_score)
-	else:
-		precision_recall_curve_multi(y_bin, y_score, classes)
+	for (name, create_plot) in plots:
+		print("    %s" % (name))
+		create_plot(y, y_score, y_pred, classes)
 
 
 
