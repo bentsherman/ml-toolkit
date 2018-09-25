@@ -4,7 +4,10 @@ This repository is a collection of command-line tools for data analysis and visu
 
 ## Installation
 
-This tool depends on several Python packages, including numpy, pandas, scikit-learn, matplotlib, and seaborn. Most of these packages are provided by default in an Anaconda environment, and any remaining packages can be installed with `conda`.
+This tool depends on several Python packages, all of which can be easily installed in an Anaconda environment:
+```bash
+conda install matplotlib numpy pandas scikit-learn seaborn tensorflow-gpu==1.7.0
+```
 
 ## Usage
 
@@ -16,7 +19,7 @@ There are four primary scripts:
 4. `visualize.py`: data visualization
 
 Each script takes two inputs: (1) a tab-delimited data matrix and (2) a JSON configuration file. The data matrix is read as a pandas DataFrame; it should contain row-wise samples and should include both features and outputs. The JSON config file should specify numerical features, categorical features, and outputs. The following example could be for a dataset of housing prices:
-```
+```json
 {
    "numerical": [
       "age",
