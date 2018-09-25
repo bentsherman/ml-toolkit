@@ -38,7 +38,7 @@ if __name__ == "__main__":
 		files = sum([["%s/%s" % (d, f) for f in os.listdir(d)] for d in class_dirs], [])
 
 		# sample files from list
-		k = NUM_SAMPLES * (i + 1) / len(classes) - NUM_SAMPLES * i / len(classes)
+		k = int(NUM_SAMPLES * (i + 1) / len(classes) - NUM_SAMPLES * i / len(classes))
 		files = random.sample(files, k)
 
 		# append each sample to data frame
