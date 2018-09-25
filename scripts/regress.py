@@ -17,6 +17,16 @@ import sys
 
 
 
+def correlation(y_true, y_pred):
+	limits = (min(min(y_true), min(y_pred)), max(max(y_true), max(y_pred)))
+
+	sns.jointplot(y_true, y_pred, kind="reg", xlim=limits, ylim=limits)
+	plt.xlabel("Expected")
+	plt.ylabel("Measured")
+	plt.show()
+
+
+
 def evaluate(model, X, y):
 	# predict output
 	y_pred = sklearn.model_selection.cross_val_predict(model, X, y, cv=5, n_jobs=-1)
@@ -33,13 +43,16 @@ def evaluate(model, X, y):
 	for (name, value) in scores:
 		print("    %-4s = %8.3f" % (name, value))
 
-	# plot correlation of expected and predicted output
-	limits = (min(min(y), min(y_pred)), max(max(y), max(y_pred)))
+	# create plots
+	plots = [
+		("correlation", correlation)
+	]
 
-	sns.jointplot(y, y_pred, kind="reg", xlim=limits, ylim=limits)
-	plt.xlabel("Expected")
-	plt.ylabel("Measured")
-	plt.show()
+	print("  plots:")
+
+	for (name, create_plot) in plots:
+		print("    %s" % (name))
+		create_plot(y, y_pred)
 
 
 
@@ -127,7 +140,7 @@ def create_gradient_boosting():
 
 
 def create_mlp():
-	return sklearn.neural_network.MLPRegressor(hidden_layer_sizes=(30,), max_iter=500)
+	return sklearn.neural_network.MLPRegressor(hidden_layer_sizes=(30,), max_iter=1000)
 
 
 
