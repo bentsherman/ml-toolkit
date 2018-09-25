@@ -25,14 +25,16 @@ def evaluate(model, X, y):
 		model.fit(X)
 		y_pred = model.predict(X)
 
-	# compute metrics
-	metrics = [
+	# compute scores
+	print("  scores:")
+
+	scores = [
 		("ari", sklearn.metrics.adjusted_rand_score(y, y_pred)),
 		("ami", sklearn.metrics.adjusted_mutual_info_score(y, y_pred))
 	]
 
-	for (name, value) in metrics:
-		print("%4s = %8.3f" % (name, value))
+	for (name, value) in scores:
+		print("    %-4s = %8.3f" % (name, value))
 
 
 

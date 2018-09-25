@@ -124,28 +124,30 @@ def precision_recall_curve(y_true, y_score, y_pred, classes):
 
 
 def evaluate(model, X, y):
-	# compute one-hot labels
+	# compute class names
 	classes = list(set(y))
 	classes.sort()
 
-	# predict output
+	# compute class scores for X using cross-validation
 	if hasattr(model, "decision_function"):
 		score_method = "decision_function"
 	else:
 		score_method = "predict_proba"
 
 	y_score = sklearn.model_selection.cross_val_predict(model, X, y, cv=5, n_jobs=-1, method=score_method)
-	y_pred = sklearn.model_selection.cross_val_predict(model, X, y, cv=5, n_jobs=-1)
 
-	# compute metrics
-	metrics = [
+	# compute predicted labels from class scores
+	y_pred = [classes[y_i.argmax()] for y_i in y_score]
+
+	# compute scores
+	scores = [
 		("acc", sklearn.metrics.accuracy_score(y, y_pred)),
 		("f1", sklearn.metrics.f1_score(y, y_pred, average="weighted"))
 	]
 
 	print("  scores:")
 
-	for (name, value) in metrics:
+	for (name, value) in scores:
 		print("    %-4s = %8.3f" % (name, value))
 
 	# create plots
