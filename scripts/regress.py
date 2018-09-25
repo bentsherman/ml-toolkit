@@ -23,6 +23,7 @@ def evaluate(model, X, y):
 
 	# compute scores
 	scores = [
+		("r", scipy.stats.pearsonr(y, y_pred)[0]),
 		("ev", sklearn.metrics.explained_variance_score(y, y_pred)),
 		("r^2", sklearn.metrics.r2_score(y, y_pred))
 	]
