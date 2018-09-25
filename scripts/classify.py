@@ -123,7 +123,7 @@ def precision_recall_curve(y_true, y_score, y_pred, classes):
 
 
 
-def evaluate(model, X, y):
+def evaluate(model, X, y, cv=5):
 	# compute class names
 	classes = list(set(y))
 	classes.sort()
@@ -134,7 +134,7 @@ def evaluate(model, X, y):
 	else:
 		score_method = "predict_proba"
 
-	y_score = sklearn.model_selection.cross_val_predict(model, X, y, cv=5, n_jobs=-1, method=score_method)
+	y_score = sklearn.model_selection.cross_val_predict(model, X, y, cv=cv, n_jobs=-1, method=score_method)
 
 	# compute predicted labels from class scores
 	y_pred = [classes[y_i.argmax()] for y_i in y_score]
@@ -251,7 +251,7 @@ def create_gradient_boosting():
 
 
 def create_mlp():
-	return sklearn.neural_network.MLPClassifier(max_iter=500)
+	return sklearn.neural_network.MLPClassifier(max_iter=1000)
 
 
 

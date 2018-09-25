@@ -27,9 +27,9 @@ def correlation(y_true, y_pred):
 
 
 
-def evaluate(model, X, y):
+def evaluate(model, X, y, cv=5):
 	# predict output
-	y_pred = sklearn.model_selection.cross_val_predict(model, X, y, cv=5, n_jobs=-1)
+	y_pred = sklearn.model_selection.cross_val_predict(model, X, y, cv=cv, n_jobs=-1)
 
 	# compute scores
 	scores = [
