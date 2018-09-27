@@ -4,6 +4,7 @@ import mpl_toolkits.mplot3d
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import sklearn.decomposition
 import sklearn.manifold
 import sklearn.preprocessing
 import sys
@@ -95,6 +96,41 @@ def plot_pairwise(df, X, y):
 
 
 
+def plot_pca(df, X, y):
+	# compute PCA
+	pca = sklearn.decomposition.PCA()
+	pca.fit(X)
+
+	# plot explained variance of each principal component
+	plt.plot(pca.explained_variance_ratio_)
+	plt.title("Explained Variance of Principal Components")
+	plt.xlabel("Component")
+	plt.ylabel("Explained Variance Ratio")
+	plt.xlim(0, len(pca.explained_variance_ratio_) - 1)
+	plt.show()
+
+	# plot projection of dataset onto two principal axes
+	X_proj = pca.transform(X)
+	idx = [0, 1]
+
+	if y.dtype == "object":
+		classes = list(set(y))
+
+		for c in classes:
+			mask = (y == c)
+			plt.scatter(X_proj[mask, idx[0]], X_proj[mask, idx[1]], label=c)
+			plt.xlabel("Principal Component %d" % (idx[0]))
+			plt.ylabel("Principal Component %d" % (idx[1]))
+
+		plt.legend()
+	else:
+		paths = plt.scatter(X_proj[:, 0], X_proj[:, 1], c=y)
+		plt.colorbar(paths)
+
+	plt.show()
+
+
+
 def plot_tsne_2d(df, X, y):
 	X_tsne = sklearn.manifold.TSNE(n_components=2).fit_transform(X)
 
@@ -105,12 +141,12 @@ def plot_tsne_2d(df, X, y):
 
 		for c in classes:
 			idx = (y == c)
-			plt.scatter(X_tsne[idx, 0], X_tsne[idx, 1], s=3, label=c)
+			plt.scatter(X_tsne[idx, 0], X_tsne[idx, 1], label=c)
 
 		plt.legend()
 	else:
-		plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y, s=3)
-		# TODO: colorbar?
+		paths = plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y)
+		plt.colorbar(paths)
 
 	plt.show()
 
@@ -127,11 +163,12 @@ def plot_tsne_3d(df, X, y):
 
 		for c in classes:
 			idx = (y == c)
-			ax.scatter(X_tsne[idx, 0], X_tsne[idx, 1], X_tsne[idx, 2], s=3, label=c)
+			ax.scatter(X_tsne[idx, 0], X_tsne[idx, 1], X_tsne[idx, 2], label=c)
 
 		plt.legend()
 	else:
-		ax.scatter(X_tsne[:, 0], X_tsne[:, 1], X_tsne[:, 2], c=y, s=3)
+		paths = ax.scatter(X_tsne[:, 0], X_tsne[:, 1], X_tsne[:, 2], c=y)
+		plt.colorbar(paths)
 
 	plt.show()
 
@@ -167,8 +204,9 @@ if __name__ == "__main__":
 		("correlation heatmap", plot_correlation_heatmap),
 		("correlation clustermap", plot_correlation_clustermap),
 		("pairwise feature distributions", plot_pairwise),
-		("2-D t-SNE embedding", plot_tsne_2d),
-		("3-D t-SNE embedding", plot_tsne_3d)
+		("principal component analysis", plot_pca),
+		("2-D t-SNE", plot_tsne_2d),
+		("3-D t-SNE", plot_tsne_3d)
 	]
 
 	for (name, method) in methods:
