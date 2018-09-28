@@ -157,13 +157,6 @@ if __name__ == "__main__":
 	X = df[config["numerical"]]
 	y = df[config["output"][0]]
 
-	# remove samples with high-variance output
-	output_sd = "%s_SD" % config["output"][0]
-	if output_sd in df.columns:
-		mask = df[output_sd] < 1.5
-		X = X[mask]
-		y = y[mask]
-
 	# apply standard scaler
 	X = sklearn.preprocessing.scale(X)
 

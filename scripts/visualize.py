@@ -189,13 +189,6 @@ if __name__ == "__main__":
 	# apply standard scaler
 	X = pd.DataFrame(sklearn.preprocessing.scale(X), X.index, X.columns)
 
-	# remove samples with high-variance output
-	output_sd = "%s_SD" % config["output"][0]
-	if output_sd in df.columns:
-		mask = df[output_sd] < 1.5
-		X = X[mask]
-		y = y[mask]
-
 	methods = [
 		("heatmap", plot_heatmap),
 		("feature distributions", plot_dist_input),
