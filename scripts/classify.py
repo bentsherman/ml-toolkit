@@ -269,7 +269,10 @@ if __name__ == "__main__":
 	y = df[config["output"][0]]
 
 	# apply standard scaler
-	X = pd.DataFrame(sklearn.preprocessing.scale(X), X.index, X.columns)
+	X = sklearn.preprocessing.scale(X)
+
+	# create training set and test set
+	X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=0.2)
 
 	# evaluate each classifier
 	methods = [
@@ -296,5 +299,5 @@ if __name__ == "__main__":
 	for (name, create_model) in methods:
 		print("Evaluating %s..." % (name))
 		model = create_model()
-		evaluate(model, X, y)
+		evaluate(model, X_train, y_train)
 		print

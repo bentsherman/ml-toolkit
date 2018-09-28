@@ -157,15 +157,18 @@ if __name__ == "__main__":
 	X = df[config["numerical"]]
 	y = df[config["output"][0]]
 
-	# apply standard scaler
-	X = pd.DataFrame(sklearn.preprocessing.scale(X), X.index, X.columns)
-
 	# remove samples with high-variance output
 	output_sd = "%s_SD" % config["output"][0]
 	if output_sd in df.columns:
 		mask = df[output_sd] < 1.5
 		X = X[mask]
 		y = y[mask]
+
+	# apply standard scaler
+	X = sklearn.preprocessing.scale(X)
+
+	# create training set and test set
+	X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=0.2)
 
 	# evaluate each regressor
 	methods = [
@@ -191,5 +194,5 @@ if __name__ == "__main__":
 	for (name, create_model) in methods:
 		print("Evaluating %s..." % (name))
 		model = create_model()
-		evaluate(model, X, y)
+		evaluate(model, X_train, y_train)
 		print
