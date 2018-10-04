@@ -18,6 +18,15 @@ class data_t(object):
 		n_idx = index * batch_size + batch_size
 		return self.data[idx:n_idx, :], self.labels[idx:n_idx, :]
 
+	def permute(self, data, idxs):
+		# data: [batch, 26, 26]
+		out = []
+		for i in range(data.shape[0]):
+			buf = data[i, idxs]
+			buf = buf[:, idxs]
+			out.append(buf)
+		return np.array(out)
+
 # expects a numpy array of data and a corresponding numpy array of labels
 # samples on the rows, features on the columns
 class DataContainer:
@@ -33,7 +42,7 @@ class DataContainer:
 	#	TODO: What is this use @Colin
 	def shuffle(self):
 		idxs = np.arange(self.train.data.shape[0])
-		idxs = np.random.shuffle(idxs)
+		np.random.shuffle(idxs)
 		self.train.data = np.squeeze(self.train.data[idxs])
 		self.train.labels = np.squeeze(self.train.labels[idxs])
 
@@ -56,6 +65,7 @@ class DataContainer:
 		stacked_l = stacked_l[samples]
 
 		return data_t(stacked_d,stacked_l)
+
 
 
 	#

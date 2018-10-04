@@ -78,6 +78,9 @@ class MLP:
         # maxabsscaler = preprocessing.MaxAbsScaler()
         # dataset.train.data = maxabsscaler.fit_transform(dataset.train.data)
         # dataset.test.data = maxabsscaler.fit_transform(dataset.test.data)
+        eps = 1e-8
+        dataset.train.data = np.log2(dataset.train.data + eps)
+        dataset.test.data = np.log2(dataset.test.data + eps)        
 
         # Construct model
         pred = self.multilayer_perceptron(x, weights, biases)
@@ -98,11 +101,14 @@ class MLP:
         if self.load:
             saver.restore(sess, '/tmp/mlp')
 
+        total_batch = int(dataset.train.num_examples/self.batch_size)
+
         # Training cycle
         for epoch in range(self.epochs):
             avg_cost = 0.
-            total_batch = int(dataset.train.num_examples/self.batch_size)
-            #dataset.shuffle()
+            
+            dataset.shuffle()
+            
             # Loop over all batches
             for i in range(total_batch):
                 batch_x, batch_y = dataset.train.next_batch(self.batch_size, i)

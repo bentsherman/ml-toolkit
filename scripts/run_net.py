@@ -29,6 +29,7 @@ sys.path.append(os.path.dirname(os.getcwd()))
 sys.path.append(os.getcwd())
 
 from models.mlp import MLP
+from models.cnn import CNN
 from utils.DataContainer import DataContainer as DC
 
 
@@ -41,6 +42,8 @@ if __name__ == '__main__':
 		subset of genes, or a random set')
 	parser.add_argument('--dataset', help='dataset to be used (numpy format)', type=str, required=True)
 	parser.add_argument('--labels', help='labels corresponding to dataset (numpy format)', type=str, required=True)
+	parser.add_argument('--net', help='which type of network to run (mlp/cnn)', type=str, required=False, \
+									choices=['mlp', 'cnn'], default='mlp')
 
 	args = parser.parse_args()
 
@@ -51,5 +54,33 @@ if __name__ == '__main__':
 	print('converting to DataContainer format...')
 	dc = DC(data=data, labels=labels)
 
-	print dc.train.data.shape
-	print dc.train.labels.shape
+	# trim distance matrices for experiments
+	dc.train.data = dc.train.data[:,:24,:24]
+	dc.test.data = dc.test.data[:,:24,:24]
+
+	if args.net == 'mlp':
+		# dc.train.data = dc.train.data.reshape(dc.train.data.shape[0], -1)
+		# dc.test.data = dc.test.data.reshape(dc.test.data.shape[0], -1)
+		# triu_i = np.triu_indices(dc.train.data.shape[-1], k=1)
+		# dc.train.data = dc.train.data[:, triu_i[0], triu_i[1]]
+		# dc.test.data = dc.test.data[:, triu_i[0], triu_i[1]]
+		net = MLP(epochs=40,
+				  h_units=[512, 128, 32],
+				  batch_size=64,
+				  n_input=dc.train.data.shape[-1],
+				  verbose=1)
+	
+	if args.net == 'cnn':
+		net = CNN(epochs=20,
+				  batch_size=64,
+				  n_input=dc.train.data.shape[-1],
+				  verbose=1)
+
+
+	print('train shape: ' + str(dc.train.data.shape))
+	print('test shape: ' + str(dc.test.data.shape))
+
+	acc = net.run(dc)
+
+	print('final accuracy: ' + str(acc))
+
