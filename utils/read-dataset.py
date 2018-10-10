@@ -47,8 +47,6 @@ if __name__ == "__main__":
 	elif TYPE == 'point':
 		dirs = ["%s/training-data-single" % (d) for d in dirs]
 
-	print(dirs)
-
 	# get list of all classes
 	classes = [d.split("-")[0] for d in dirs]
 	classes = list(set(classes))
