@@ -30,6 +30,7 @@ sys.path.append(os.getcwd())
 
 from models.mlp import MLP
 from models.cnn import CNN
+from models.pointnet import PointNet
 from utils.DataContainer import DataContainer as DC
 
 
@@ -43,7 +44,7 @@ if __name__ == '__main__':
 	parser.add_argument('--dataset', help='dataset to be used (numpy format)', type=str, required=True)
 	parser.add_argument('--labels', help='labels corresponding to dataset (numpy format)', type=str, required=True)
 	parser.add_argument('--net', help='which type of network to run (mlp/cnn)', type=str, required=False, \
-									choices=['mlp', 'cnn'], default='mlp')
+									choices=['mlp', 'cnn', 'pc'], default='mlp')
 
 	args = parser.parse_args()
 
@@ -75,6 +76,13 @@ if __name__ == '__main__':
 				  batch_size=64,
 				  n_input=dc.train.data.shape[-1],
 				  verbose=1)
+
+	if args.net == 'pc':
+		net = PointNet(epochs=20,
+					   batch_size=64,
+					   n_points=25,
+					   n_input=3, 
+					   verbose=1)
 
 
 	print('train shape: ' + str(dc.train.data.shape))
