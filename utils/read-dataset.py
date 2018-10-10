@@ -24,7 +24,7 @@ def read_point_data(file):
 
 
 if __name__ == "__main__":
-	if len(sys.argv) != 3:
+	if len(sys.argv) != 4:
 		print("usage: python create-sid.py [dir] [type] [out_name]")
 		print("dir: directory to data")
 		print("type: dist or point -- distance matrix or point data")
