@@ -1,16 +1,44 @@
+#
+# file: read-dataset.py
+# 
+# This file takes in a path to training data that contains named folders for each class
+# with text files of points/matrices within each file
+#
+
 import numpy as np
 import os
 import random
 import sys
 
+def read_2d_matrix(file):
+	# read in 2d matrix
+	sample = np.loadtxt(file)
+
+	# get rid of first 2 columns bc irrelevant to distance matrix
+	return sample[:, 2:]	
+
+def read_point_data(file):
+	sample = np.loadtxt(file)
+
+	return sample[:,2:]
+
+
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
-		print("usage: python create-sid.py [dir] [out_name]")
+		print("usage: python create-sid.py [dir] [type] [out_name]")
+		print("dir: directory to data")
+		print("type: dist or point -- distance matrix or point data")
+		print("out_name: file name to save the output to")
 		sys.exit(1)
 
 
 	INPUT_DIR = sys.argv[1]
-	OUTPUT_NAME = sys.argv[2]
+	TYPE = sys.argv[2]
+
+	if TYPE is not 'dist' or TYPE is not 'point':
+		print("incorrect type parameter")
+
+	OUTPUT_NAME = sys.argv[3]
 
 	# get list of all subdirectories
 	dirs = [d for d in os.listdir(INPUT_DIR) if os.path.isdir("%s/%s" % (INPUT_DIR, d))]
@@ -31,11 +59,10 @@ if __name__ == "__main__":
 		files = sum([["%s/%s" % (d, f) for f in os.listdir(d)] for d in class_dirs], [])
 
 		for f in files:
-			# read in 2d matrix
-			sample = np.loadtxt(f)
-
-			# get rid of first 2 columns bc irrelevant to distance matrix
-			sample = sample[:, 2:]
+			if TYPE is dist:
+				sample = read_2d_matrix(f)
+			elif TYPE is point:
+				sample = read_point_data(f)
 
 			# create one hot labels
 			label = np.zeros(len(classes))

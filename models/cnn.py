@@ -64,7 +64,7 @@ class CNN:
 
     def conv(self, x):
         with tf.variable_scope('feature_extractor', reuse=tf.AUTO_REUSE):
-            input_layer = tf.reshape(x, [-1, 8, 8, 1])
+            input_layer = tf.reshape(x, [-1, 26, 26, 1])
 
             conv1 = tf.layers.conv2d(
                                 inputs=input_layer,
@@ -104,7 +104,7 @@ class CNN:
 
             #pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
-            flat = tf.reshape(conv4, [-1, 6 * 6 * 256])
+            flat = tf.layers.flatten(conv4)
 
             dense1 = tf.layers.dense(inputs=flat, units=512, activation=tf.nn.relu)
 
