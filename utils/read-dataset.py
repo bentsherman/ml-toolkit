@@ -35,17 +35,19 @@ if __name__ == "__main__":
 	INPUT_DIR = sys.argv[1]
 	TYPE = sys.argv[2]
 
-	if TYPE is not 'dist' or TYPE is not 'point':
+	if TYPE != 'dist' or TYPE != 'point':
 		print("incorrect type parameter")
 
 	OUTPUT_NAME = sys.argv[3]
 
 	# get list of all subdirectories
 	dirs = [d for d in os.listdir(INPUT_DIR) if os.path.isdir("%s/%s" % (INPUT_DIR, d))]
-	if TYPE is 'dist':
+	if TYPE == 'dist':
 		dirs = ["%s/training-data" % (d) for d in dirs]
-	elif TYPE is 'point':
-		dirs = ["%s/training-data-single	" % (d) for d in dirs]
+	elif TYPE == 'point':
+		dirs = ["%s/training-data-single" % (d) for d in dirs]
+
+	print(dirs)
 
 	# get list of all classes
 	classes = [d.split("-")[0] for d in dirs]
@@ -62,9 +64,9 @@ if __name__ == "__main__":
 		files = sum([["%s/%s" % (d, f) for f in os.listdir(d)] for d in class_dirs], [])
 
 		for f in files:
-			if TYPE is 'dist':
+			if TYPE == 'dist':
 				sample = read_2d_matrix(f)
-			elif TYPE is 'point':
+			elif TYPE == 'point':
 				sample = read_point_data(f)
 
 			# create one hot labels
