@@ -45,7 +45,7 @@ if __name__ == "__main__":
 	if TYPE is 'dist':
 		dirs = ["%s/training-data" % (d) for d in dirs]
 	elif TYPE is 'point':
-		dirs = ["%s/training-data-single" % (d) for d in dirs]
+		dirs = ["%s/training-data-single	" % (d) for d in dirs]
 
 	# get list of all classes
 	classes = [d.split("-")[0] for d in dirs]
@@ -62,9 +62,9 @@ if __name__ == "__main__":
 		files = sum([["%s/%s" % (d, f) for f in os.listdir(d)] for d in class_dirs], [])
 
 		for f in files:
-			if TYPE is dist:
+			if TYPE is 'dist':
 				sample = read_2d_matrix(f)
-			elif TYPE is point:
+			elif TYPE is 'point':
 				sample = read_point_data(f)
 
 			# create one hot labels
