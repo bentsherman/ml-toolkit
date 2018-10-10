@@ -35,7 +35,7 @@ if __name__ == "__main__":
 	INPUT_DIR = sys.argv[1]
 	TYPE = sys.argv[2]
 
-	if TYPE != 'dist' or TYPE != 'point':
+	if TYPE != 'dist' and TYPE != 'point':
 		print("incorrect type parameter")
 
 	OUTPUT_NAME = sys.argv[3]
