@@ -42,7 +42,10 @@ if __name__ == "__main__":
 
 	# get list of all subdirectories
 	dirs = [d for d in os.listdir(INPUT_DIR) if os.path.isdir("%s/%s" % (INPUT_DIR, d))]
-	dirs = ["%s/training-data" % (d) for d in dirs]
+	if TYPE is 'dist':
+		dirs = ["%s/training-data" % (d) for d in dirs]
+	elif TYPE is 'point':
+		dirs = ["%s/training-data-single" % (d) for d in dirs]
 
 	# get list of all classes
 	classes = [d.split("-")[0] for d in dirs]
