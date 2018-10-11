@@ -78,7 +78,7 @@ if __name__ == '__main__':
 				  verbose=1)
 
 	if args.net == 'pc':
-		net = PointNet(epochs=20,
+		net = PointNet(epochs=5,
 					   batch_size=64,
 					   n_points=25,
 					   n_input=3, 

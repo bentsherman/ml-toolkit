@@ -145,7 +145,7 @@ class PointNet:
             saver.save(sess, "/tmp/cnn")
 
         # Test model
-        correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
+        correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y_pl, 1))
 
         # Calculate accuracy
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
