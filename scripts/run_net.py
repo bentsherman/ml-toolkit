@@ -56,8 +56,8 @@ if __name__ == '__main__':
 	dc = DC(data=data, labels=labels)
 
 	# trim distance matrices for experiments
-	#dc.train.data = dc.train.data[:,:20,:20]
-	#dc.test.data = dc.test.data[:,:20,:20]
+	dc.train.data = dc.train.data[:,:25,:]
+	dc.test.data = dc.test.data[:,:25,:]
 
 	if args.net == 'mlp':
 		# dc.train.data = dc.train.data.reshape(dc.train.data.shape[0], -1)

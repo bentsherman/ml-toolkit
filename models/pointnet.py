@@ -88,6 +88,41 @@ class PointNet:
         return classify_loss
 
 
+    # function take from https://github.com/charlesq34/pointnet/blob/master/provider.py
+    def rotate_point_cloud(self, batch_data):
+        """ Randomly rotate the point clouds to augument the dataset
+            rotation is per shape based along up direction
+            Input:
+              BxNx3 array, original batch of point clouds
+            Return:
+              BxNx3 array, rotated batch of point clouds
+        """
+        rotated_data = np.zeros(batch_data.shape, dtype=np.float32)
+        for k in range(batch_data.shape[0]):
+            angles = np.random.uniform(size=(3)) * 2 * np.pi
+            cosval = np.cos(angles)
+            sinval = np.sin(angles)
+
+            x_rotation_matrix = np.array([[1, 0, 0],
+                                        [0, cosval[0], -sinval[0]],
+                                        [0, sinval[0], cosval[0]]])
+
+            y_rotation_matrix = np.array([[cosval[1], 0, sinval[1]],
+                                        [0, 1, 0],
+                                        [-sinval[1], 0, cosval[1]]])
+
+            z_rotation_matrix = np.array([[cosval[2], -sinval[2], 0],
+                                        [sinval[2], cosval[2], 0],
+                                        [0, 0, 1]])
+
+            shape_pc = batch_data[k, ...]
+            tmp = np.dot(shape_pc.reshape((-1, 3)), x_rotation_matrix)
+            tmp = np.dot(tmp, x_rotation_matrix)
+            rotated_data[k, ...] = np.dot(tmp, x_rotation_matrix)
+
+        return rotated_data
+
+
     # method to run the training/evaluation of the model
     def run(self, dataset):
 
@@ -129,7 +164,7 @@ class PointNet:
             # Loop over all batches
             for i in range(total_batch):
                 batch_x, batch_y = dataset.train.next_batch(self.batch_size, i)
-
+                batch_x = self.rotate_point_cloud(batch_x)
                 #batch_x = dataset.train.permute(batch_x, idxs)
                 _, c = sess.run([optimizer, loss], feed_dict={pc_pl: batch_x, 
                                                               y_pl: batch_y,
@@ -155,6 +190,7 @@ class PointNet:
         total_test_batch = int(dataset.test.num_examples / 8192)
         for i in range(total_test_batch):
             batch_x, batch_y = dataset.test.next_batch(self.batch_size, i)
+            batch_x = self.rotate_point_cloud(batch_x)
             #batch_x = dataset.train.permute(batch_x, idxs)
             accs.append(accuracy.eval({pc_pl: batch_x, 
                                        y_pl: batch_y,
