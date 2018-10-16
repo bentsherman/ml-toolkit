@@ -117,8 +117,8 @@ class PointNet:
 
             shape_pc = batch_data[k, ...]
             tmp = np.dot(shape_pc.reshape((-1, 3)), x_rotation_matrix)
-            tmp = np.dot(tmp, x_rotation_matrix)
-            rotated_data[k, ...] = np.dot(tmp, x_rotation_matrix)
+            tmp = np.dot(tmp, y_rotation_matrix)
+            rotated_data[k, ...] = np.dot(tmp, z_rotation_matrix)
 
         return rotated_data
 
