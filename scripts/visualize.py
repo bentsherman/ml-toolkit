@@ -96,7 +96,7 @@ def plot_pairwise(df, X, y):
 
 
 
-def plot_pca(df, X, y):
+def plot_pca_explained(df, X, y):
 	# compute PCA
 	pca = sklearn.decomposition.PCA()
 	pca.fit(X)
@@ -109,8 +109,11 @@ def plot_pca(df, X, y):
 	plt.xlim(0, len(pca.explained_variance_ratio_) - 1)
 	plt.show()
 
+
+
+def plot_pca_2d(df, X, y):
 	# plot projection of dataset onto two principal axes
-	X_proj = pca.transform(X)
+	X_proj = sklearn.decomposition.PCA().fit_transform(X)
 	idx = [0, 1]
 
 	if y.dtype == "object":
@@ -124,8 +127,35 @@ def plot_pca(df, X, y):
 
 		plt.legend()
 	else:
-		paths = plt.scatter(X_proj[:, 0], X_proj[:, 1], c=y)
-		plt.colorbar(paths)
+		plt.scatter(X_proj[:, idx[0]], X_proj[:, idx[1]], c=y)
+		plt.colorbar()
+
+	plt.show()
+
+
+
+def plot_pca_3d(df, X, y):
+	# plot projection of dataset onto three principal axes
+	X_proj = sklearn.decomposition.PCA().fit_transform(X)
+	idx = [0, 1, 2]
+
+	fig = plt.figure()
+	ax = fig.add_subplot(111, projection="3d")
+
+	if y.dtype == "object":
+		classes = list(set(y))
+
+		for c in classes:
+			mask = (y == c)
+			ax.scatter(X_proj[mask, idx[0]], X_proj[mask, idx[1]], X_proj[mask, idx[2]], label=c)
+			ax.set_xlabel("Principal Component %d" % (idx[0]))
+			ax.set_ylabel("Principal Component %d" % (idx[1]))
+			ax.set_zlabel("Principal Component %d" % (idx[2]))
+
+		plt.legend()
+	else:
+		ax.scatter(X_proj[:, 0], X_proj[:, 1], X_proj[:, 2], c=y)
+		plt.colorbar()
 
 	plt.show()
 
@@ -140,13 +170,13 @@ def plot_tsne_2d(df, X, y):
 		classes = list(set(y))
 
 		for c in classes:
-			idx = (y == c)
-			plt.scatter(X_tsne[idx, 0], X_tsne[idx, 1], label=c)
+			mask = (y == c)
+			plt.scatter(X_tsne[mask, 0], X_tsne[mask, 1], label=c)
 
 		plt.legend()
 	else:
-		paths = plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y)
-		plt.colorbar(paths)
+		plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y)
+		plt.colorbar()
 
 	plt.show()
 
@@ -162,13 +192,13 @@ def plot_tsne_3d(df, X, y):
 		classes = list(set(y))
 
 		for c in classes:
-			idx = (y == c)
-			ax.scatter(X_tsne[idx, 0], X_tsne[idx, 1], X_tsne[idx, 2], label=c)
+			mask = (y == c)
+			ax.scatter(X_tsne[mask, 0], X_tsne[mask, 1], X_tsne[mask, 2], label=c)
 
 		plt.legend()
 	else:
-		paths = ax.scatter(X_tsne[:, 0], X_tsne[:, 1], X_tsne[:, 2], c=y)
-		plt.colorbar(paths)
+		ax.scatter(X_tsne[:, 0], X_tsne[:, 1], X_tsne[:, 2], c=y)
+		plt.colorbar()
 
 	plt.show()
 
@@ -197,7 +227,9 @@ if __name__ == "__main__":
 		("correlation heatmap", plot_correlation_heatmap),
 		("correlation clustermap", plot_correlation_clustermap),
 		("pairwise feature distributions", plot_pairwise),
-		("principal component analysis", plot_pca),
+		("PCA explained variance", plot_pca_explained),
+		("2-D PCA", plot_pca_2d),
+		("3-D PCA", plot_pca_3d),
 		("2-D t-SNE", plot_tsne_2d),
 		("3-D t-SNE", plot_tsne_3d)
 	]
