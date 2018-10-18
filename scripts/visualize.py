@@ -49,7 +49,7 @@ def plot_dist_input(df, X, y):
 
 
 def plot_dist_output(df, X, y):
-	if y.dtype == "object":
+	if y.dtype.kind in "OSU":
 		sns.countplot(y)
 	else:
 		sns.distplot(y)
@@ -116,7 +116,7 @@ def plot_pca_2d(df, X, y):
 	X_proj = sklearn.decomposition.PCA().fit_transform(X)
 	idx = [0, 1]
 
-	if y.dtype == "object":
+	if y.dtype.kind in "OSU":
 		classes = list(set(y))
 
 		for c in classes:
@@ -142,7 +142,7 @@ def plot_pca_3d(df, X, y):
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection="3d")
 
-	if y.dtype == "object":
+	if y.dtype.kind in "OSU":
 		classes = list(set(y))
 
 		for c in classes:
@@ -154,8 +154,8 @@ def plot_pca_3d(df, X, y):
 
 		plt.legend()
 	else:
-		ax.scatter(X_proj[:, 0], X_proj[:, 1], X_proj[:, 2], c=y)
-		plt.colorbar()
+		paths = ax.scatter(X_proj[:, 0], X_proj[:, 1], X_proj[:, 2], c=y)
+		plt.colorbar(paths)
 
 	plt.show()
 
@@ -166,7 +166,7 @@ def plot_tsne_2d(df, X, y):
 
 	plt.axis("off")
 
-	if y.dtype == "object":
+	if y.dtype.kind in "OSU":
 		classes = list(set(y))
 
 		for c in classes:
@@ -188,7 +188,7 @@ def plot_tsne_3d(df, X, y):
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection="3d")
 
-	if y.dtype == "object":
+	if y.dtype.kind in "OSU":
 		classes = list(set(y))
 
 		for c in classes:
@@ -197,8 +197,8 @@ def plot_tsne_3d(df, X, y):
 
 		plt.legend()
 	else:
-		ax.scatter(X_tsne[:, 0], X_tsne[:, 1], X_tsne[:, 2], c=y)
-		plt.colorbar()
+		paths = ax.scatter(X_tsne[:, 0], X_tsne[:, 1], X_tsne[:, 2], c=y)
+		plt.colorbar(paths)
 
 	plt.show()
 
