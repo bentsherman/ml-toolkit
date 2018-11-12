@@ -218,7 +218,7 @@ class PointNet:
 
         sess = tf.Session()
 
-        saver.restore('/scratch3/ctargon/weights/r2.0')
+        saver.restore(sess, '/scratch3/ctargon/weights/r2.0/r2model')
 
         accs = []
         is_training = False
