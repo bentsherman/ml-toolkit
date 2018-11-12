@@ -45,6 +45,7 @@ if __name__ == '__main__':
 	parser.add_argument('--labels', help='labels corresponding to dataset (numpy format)', type=str, required=True)
 	parser.add_argument('--net', help='which type of network to run (mlp/cnn)', type=str, required=False, \
 									choices=['mlp', 'cnn', 'pc'], default='mlp')
+	parser.add_argument('--n_points', help='number of points to use from original dataset', type=int, required=False, default=25)
 
 	args = parser.parse_args()
 
@@ -56,8 +57,8 @@ if __name__ == '__main__':
 	dc = DC(data=data, labels=labels)
 
 	# trim distance matrices for experiments
-	dc.train.data = dc.train.data[:,:25,:]
-	dc.test.data = dc.test.data[:,:25,:]
+	dc.train.data = dc.train.data[:,:args.n_points,:]
+	dc.test.data = dc.test.data[:,:args.n_points,:]
 
 	if args.net == 'mlp':
 		# dc.train.data = dc.train.data.reshape(dc.train.data.shape[0], -1)
@@ -78,11 +79,13 @@ if __name__ == '__main__':
 				  verbose=1)
 
 	if args.net == 'pc':
-		net = PointNet(epochs=5,
+		net = PointNet(epochs=25,
 					   batch_size=64,
-					   n_points=25,
+					   n_points=args.n_points,
+					   n_classes=dc.train.labels.shape[-1],
 					   n_input=3, 
-					   verbose=1)
+					   verbose=1,
+					   save=0)
 
 
 	print('train shape: ' + str(dc.train.data.shape))

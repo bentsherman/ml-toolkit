@@ -20,7 +20,7 @@ def read_2d_matrix(file):
 def read_point_data(file):
 	sample = np.loadtxt(file)
 
-	return sample[:,2:]
+	return sample[:,2:], sample.shape[0]
 
 
 if __name__ == "__main__":
@@ -42,10 +42,10 @@ if __name__ == "__main__":
 
 	# get list of all subdirectories
 	dirs = [d for d in os.listdir(INPUT_DIR) if os.path.isdir("%s/%s" % (INPUT_DIR, d))]
-	if TYPE == 'dist':
-		dirs = ["%s/training-data" % (d) for d in dirs]
-	elif TYPE == 'point':
-		dirs = ["%s/training-data-single" % (d) for d in dirs]
+	#if TYPE == 'dist':
+	dirs = ["%s/training-data" % (d) for d in dirs]
+	#elif TYPE == 'point':
+	#	dirs = ["%s/training-data-single" % (d) for d in dirs]
 
 	# get list of all classes
 	classes = [d.split("-")[0] for d in dirs]
@@ -53,6 +53,7 @@ if __name__ == "__main__":
 
 	samples = []
 	labels = []
+	idxs = []
 
 	for i in range(len(classes)):
 		print(classes[i])
@@ -65,7 +66,8 @@ if __name__ == "__main__":
 			if TYPE == 'dist':
 				sample = read_2d_matrix(f)
 			elif TYPE == 'point':
-				sample = read_point_data(f)
+				sample, size = read_point_data(f)
+				idxs.append(size)
 
 			# create one hot labels
 			label = np.zeros(len(classes))
@@ -75,6 +77,15 @@ if __name__ == "__main__":
 			samples.append(sample)
 			labels.append(label)
 
+	if TYPE == 'point':
+		max_pc = max(idxs)
+		padded_samples = []
+		for s in samples:
+			tmp = np.zeros((max_pc, 3))
+			tmp[:s.shape[0], :s.shape[1]] = s
+			padded_samples.append(tmp)
+		samples = padded_samples
+
 	# convert samples and labels to numpy format
 	np_samples = np.asarray(samples)
 	np_labels = np.asarray(labels)
@@ -82,4 +93,11 @@ if __name__ == "__main__":
 	# save output files
 	np.save(OUTPUT_NAME + '_samples.npy', np_samples)
 	np.save(OUTPUT_NAME + '_labels.npy', np_labels)
+
+	if TYPE == 'point':
+		np_idxs = np.asarray(idxs)
+		np.save(OUTPUT_NAME + '_idxs.npy', np_idxs)
+
+
+
 
