@@ -2,7 +2,7 @@
 
 
 import numpy as np
-import sys, argparse
+import os, sys, argparse
 
 sys.path.append(os.path.dirname(os.getcwd()))
 sys.path.append(os.getcwd())
