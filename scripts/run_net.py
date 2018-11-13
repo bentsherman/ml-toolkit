@@ -85,7 +85,7 @@ if __name__ == '__main__':
 					   n_classes=dc.train.labels.shape[-1],
 					   n_input=3, 
 					   verbose=1,
-					   save=0)
+					   save=1)
 
 
 	print('train shape: ' + str(dc.train.data.shape))
