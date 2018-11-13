@@ -15,7 +15,8 @@ import tf_util
 class PointNet:
     def __init__(self, lr=0.001, epochs=75, \
         batch_size=16, disp_step=1, n_points=25, n_input=3, \
-        n_classes=4, dropout=0, load=0, save=0, verbose=0):
+        n_classes=4, dropout=0, load=0, save=0, verbose=0,
+        weights_file='/scratch3/ctargon/weights/r2.0/r2model'):
 
         self.lr = lr
         self.epochs = epochs
@@ -176,7 +177,7 @@ class PointNet:
                 print("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(avg_cost))
 
         if self.save:
-            saver.save(sess, "/scratch3/ctargon/weights/r2.0/r2model")
+            saver.save(sess, self.weights_file)
 
         # Test model
         correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y_pl, 1))
@@ -218,7 +219,7 @@ class PointNet:
 
         sess = tf.Session()
 
-        saver.restore(sess, '/scratch3/ctargon/weights/r2.0/r2model')
+        saver.restore(sess, self.weights_file)
 
         accs = []
         is_training = False
