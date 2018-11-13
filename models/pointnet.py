@@ -29,6 +29,7 @@ class PointNet:
         self.save = save
         self.dropout = dropout
         self.verbose = verbose
+        self.weights_file = weights_file
 
         os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
