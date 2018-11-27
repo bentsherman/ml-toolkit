@@ -124,6 +124,18 @@ class PointNet:
         return rotated_data
 
 
+    def random_scale(self, batch_data, dist='normal'):
+        if dist == 'normal':
+            rands = np.random.normal(1, 0.1, size=(batch_data.shape[0], 1, 1))
+        elif dist == 'uniform':
+            rands = np.random.uniform(0.9, 1.1, size=(batch_data.shape[0], 1, 1))
+        else:
+            return batch_data
+
+        return batch_data * rands
+
+
+
     # method to run the training/evaluation of the model
     def run(self, dataset):
 
@@ -166,6 +178,7 @@ class PointNet:
             for i in range(total_batch):
                 batch_x, batch_y = dataset.train.next_batch(self.batch_size, i)
                 batch_x = self.rotate_point_cloud(batch_x)
+                batch_x = self.random_scale(batch_x)
                 #batch_x = dataset.train.permute(batch_x, idxs)
                 _, c = sess.run([optimizer, loss], feed_dict={pc_pl: batch_x, 
                                                               y_pl: batch_y,
@@ -191,7 +204,7 @@ class PointNet:
         total_test_batch = int(dataset.test.num_examples / self.batch_size)
         for i in range(total_test_batch):
             batch_x, batch_y = dataset.test.next_batch(self.batch_size, i)
-            batch_x = self.rotate_point_cloud(batch_x)
+            #batch_x = self.rotate_point_cloud(batch_x)
             accs.append(accuracy.eval({pc_pl: batch_x, 
                                        y_pl: batch_y,
                                        is_training_pl: is_training}, 
@@ -227,7 +240,7 @@ class PointNet:
         total_test_batch = int(dataset.test.num_examples / self.batch_size)
         for i in range(total_test_batch):
             batch_x, batch_y = dataset.test.next_batch(self.batch_size, i)
-            batch_x = self.rotate_point_cloud(batch_x)
+            #batch_x = self.rotate_point_cloud(batch_x)
             accs.append(accuracy.eval({pc_pl: batch_x,
                                        y_pl: batch_y,
                                        is_training_pl: is_training},

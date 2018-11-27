@@ -64,7 +64,7 @@ if __name__ == '__main__':
 				  verbose=1)
 
 	if args.net == 'pc':
-		net = PointNet(epochs=20,
+		net = PointNet(epochs=50,
 					   batch_size=64,
 					   n_points=dc.train.data.shape[1],
 					   n_classes=dc.train.labels.shape[-1],

@@ -4,5 +4,5 @@
 cd /home/$USER/ml-tools
 source activate tensorflow
 
-python scripts/run_net.py --dataset ./data/ice/ice_pc_samples.npy --labels ./data/ice/ice_pc_labels.npy --net pc --n_points 50
+python scripts/run_net.py --dataset ./data/pc-r2.0/pc-r2.0_samples.npy --labels ./data/pc-r2.0/pc-r2.0_labels.npy --net pc
 
