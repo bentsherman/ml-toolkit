@@ -16,7 +16,7 @@ class PointNet:
     def __init__(self, lr=0.001, epochs=75, \
         batch_size=16, disp_step=1, n_points=25, n_input=3, \
         n_classes=4, dropout=0, load=0, save=0, verbose=0,
-        weights_file='/scratch3/ctargon/weights/r2.0/r2model'):
+        weights_file='/scratch3/ctargon/weights/r2.0/r2'):
 
         self.lr = lr
         self.epochs = epochs

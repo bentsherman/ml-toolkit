@@ -42,8 +42,8 @@ if __name__ == '__main__':
 	dc = DC(data=data, labels=labels)
 
 	# trim distance matrices for experiments
-	dc.train.data = dc.train.data[:,:args.n_points,:]
-	dc.test.data = dc.test.data[:,:args.n_points,:]
+	#dc.train.data = dc.train.data[:,:args.n_points,:]
+	#dc.test.data = dc.test.data[:,:args.n_points,:]
 
 	if args.net == 'mlp':
 		# dc.train.data = dc.train.data.reshape(dc.train.data.shape[0], -1)
@@ -64,13 +64,14 @@ if __name__ == '__main__':
 				  verbose=1)
 
 	if args.net == 'pc':
-		net = PointNet(epochs=25,
+		net = PointNet(epochs=20,
 					   batch_size=64,
-					   n_points=args.n_points,
+					   n_points=dc.train.data.shape[1],
 					   n_classes=dc.train.labels.shape[-1],
 					   n_input=3, 
 					   verbose=1,
-					   save=1)
+					   save=1,
+                       weights_file='/scratch3/ctargon/weights/r2.0/r2')
 
 
 	print('train shape: ' + str(dc.train.data.shape))

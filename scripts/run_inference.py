@@ -10,7 +10,7 @@ sys.path.append(os.getcwd())
 from models.mlp import MLP
 from models.cnn import CNN
 from models.pointnet import PointNet
-from utils.DataContainer import DataContainer as DC
+from utils.InferenceContainer import InferenceContainer as IC
 
 
 
@@ -30,11 +30,11 @@ if __name__ == '__main__':
 	d = np.load(args.dataset)
 	l = np.load(args.labels)
 
-	dc = DC(data=d, labels=l)
+	ic = IC(data=d, labels=l)
 
-	pc = PointNet(n_points=dc.test.data.shape[1], weights_file=args.weights)
+	pc = PointNet(n_points=ic.test.data.shape[1], weights_file=args.weights)
 
-	acc = pc.inference(dc)
+	acc = pc.inference(ic)
 
 	print('inference accuracy: ' + str(acc))
 
