@@ -1,6 +1,5 @@
 #/usr/bin/python
 
-# multilayer perceptron neural network with softmax layer to classify genetic data
 import numpy as np
 import tensorflow as tf
 from sklearn import preprocessing
@@ -104,25 +103,25 @@ class PointNet:
             cosval = np.cos(angles)
             sinval = np.sin(angles)
 
-            x_rotation_matrix = np.array([[1, 0, 0],
-                                        [0, cosval[0], -sinval[0]],
-                                        [0, sinval[0], cosval[0]]])
+            x_rot_mat = np.array([[1, 0, 0],
+                                  [0, cosval[0], -sinval[0]],
+                                  [0, sinval[0], cosval[0]]])
 
-            y_rotation_matrix = np.array([[cosval[1], 0, sinval[1]],
-                                        [0, 1, 0],
-                                        [-sinval[1], 0, cosval[1]]])
+            y_rot_mat = np.array([[cosval[1], 0, sinval[1]],
+                                  [0, 1, 0],
+                                  [-sinval[1], 0, cosval[1]]])
 
-            z_rotation_matrix = np.array([[cosval[2], -sinval[2], 0],
-                                        [sinval[2], cosval[2], 0],
-                                        [0, 0, 1]])
+            z_rot_mat = np.array([[cosval[2], -sinval[2], 0],
+                                  [sinval[2], cosval[2], 0],
+                                  [0, 0, 1]])
 
-            shape_pc = batch_data[k, ...]
-            tmp = np.dot(shape_pc.reshape((-1, 3)), x_rotation_matrix)
-            tmp = np.dot(tmp, y_rotation_matrix)
-            rotated_data[k, ...] = np.dot(tmp, z_rotation_matrix)
+            # Overall rotation calculated from x,y,z -->
+            # order matters bc matmult not commutative 
+            overall_rot = np.dot(z_rot_mat,np.dot(y_rot_mat,x_rot_mat))
+            # Transposes bc overall_rot operates on col. vec [[x,y,z]]
+            rotated_data[k,...] = np.dot(overall_rot,batch_data[k,...].T).T
 
         return rotated_data
-
 
     def random_scale(self, batch_data, dist='normal'):
         if dist == 'normal':
@@ -133,8 +132,6 @@ class PointNet:
             return batch_data
 
         return batch_data * rands
-
-
 
     # method to run the training/evaluation of the model
     def run(self, dataset):
@@ -179,7 +176,6 @@ class PointNet:
                 batch_x, batch_y = dataset.train.next_batch(self.batch_size, i)
                 batch_x = self.rotate_point_cloud(batch_x)
                 batch_x = self.random_scale(batch_x)
-                #batch_x = dataset.train.permute(batch_x, idxs)
                 _, c = sess.run([optimizer, loss], feed_dict={pc_pl: batch_x, 
                                                               y_pl: batch_y,
                                                               is_training_pl: is_training})
@@ -229,13 +225,11 @@ class PointNet:
         pred = self.pointnet(pc_pl, is_training_pl)
 
         correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y_pl, 1))
-
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 
+        # Load from weights file
         saver = tf.train.Saver()
-
         sess = tf.Session()
-
         saver.restore(sess, self.weights_file)
 
         accs = []
@@ -249,15 +243,41 @@ class PointNet:
                                        is_training_pl: is_training},
                                        session=sess))
 
+        sess.close()
+
         return sum(accs) / float(len(accs))
+       
+    def infer_nolabel(self,dataset):
 
+        tf.reset_default_graph()
+        pc_pl = tf.placeholder(tf.float32, [None, self.n_points, self.n_input])
+        is_training_pl = tf.placeholder(tf.bool, shape=())
 
+        # Construct model
+        pred = self.pointnet(pc_pl, is_training_pl)
+        pred_ndx = tf.argmax(pred,1)
 
+        # Load from weights file
+        saver = tf.train.Saver()
+        sess = tf.Session()
+        saver.restore(sess, self.weights_file)
 
+        results = []
+        is_training = False
+        total_test_batch = int(dataset.shape[0] / self.batch_size)
 
+        for i in range(total_test_batch):
+            batch_x = self.next_test_batch(dataset,self.batch_size,i)
+            batch_x = self.rotate_point_cloud(batch_x)
+            results.append(pred_ndx.eval({pc_pl: batch_x,
+                                       is_training_pl: is_training},
+                                       session=sess))
+        sess.close()
+        return results
 
-
-
-
+    def next_test_batch(self,dataset, batch_size, index):
+	    idx = index * batch_size
+	    n_idx = index * batch_size + batch_size
+	    return dataset[idx:n_idx, :]
 
 
