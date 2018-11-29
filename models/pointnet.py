@@ -190,6 +190,9 @@ class PointNet:
             if self.verbose:
                 print("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(avg_cost))
 
+            if epoch % 10 == 0 and self.save:
+                saver.save(sess, self.weights_file)
+
         if self.save:
             saver.save(sess, self.weights_file)
 
