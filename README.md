@@ -18,7 +18,7 @@ There are four primary scripts:
 3. `regress.py`: regression algorithms
 4. `visualize.py`: data visualization
 
-Each script takes two inputs: (1) a tab-delimited data matrix and (2) a JSON configuration file. The data matrix is read as a pandas DataFrame; it should contain row-wise samples and should include both features and outputs. The JSON config file should specify numerical features, categorical features, and outputs. The following example could be for a dataset of housing prices:
+These scripts are found in the `bin` folder. Each script takes two inputs: (1) a tab-delimited data matrix and (2) a JSON configuration file. The data matrix is read as a pandas DataFrame; it should contain row-wise samples and should include both features and outputs. The JSON config file should specify numerical features, categorical features, and outputs. The following example could be for a dataset of housing prices:
 ```json
 {
    "numerical": [
@@ -37,4 +37,4 @@ Each script takes two inputs: (1) a tab-delimited data matrix and (2) a JSON con
 }
 ```
 
-The `create-config.py` script can generate a basic config file from any tab-delimited data file, but you will likely need to modify it to suit your particular needs.
+The `scripts` folder contains a collection of helper scripts for performing odd tasks. The `create-config.py` script can generate a basic config file from any tab-delimited data file, but you will likely need to modify it to suit your particular needs.

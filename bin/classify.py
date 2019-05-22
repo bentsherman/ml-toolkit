@@ -263,7 +263,7 @@ if __name__ == "__main__":
 	config = json.load(open(sys.argv[2]))
 
 	# load data, extract X and y
-	df = pd.read_table(sys.argv[1])
+	df = pd.read_csv(sys.argv[1], sep="\t")
 	df_cate = df[config["categorical"]]
 	X = df[config["numerical"]]
 	y = df[config["output"][0]]

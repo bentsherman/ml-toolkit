@@ -44,7 +44,7 @@ if __name__ == "__main__":
 		# append each sample to data frame
 		for f in files:
 			# read sample file
-			sample = pd.read_table(f, header=None)
+			sample = pd.read_csv(f, sep="\t", header=None)
 
 			# allocate X and y on first sample
 			if num_features == 0:

@@ -10,7 +10,7 @@ if __name__ == "__main__":
 		sys.exit(1)
 
 	# load dataframe, config
-	df = pd.read_table(sys.argv[1])
+	df = pd.read_csv(sys.argv[1], sep="\t")
 	config = json.load(open(sys.argv[2]))
 
 	# remove samples with high-variance output

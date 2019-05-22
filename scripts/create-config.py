@@ -10,7 +10,7 @@ if __name__ == "__main__":
 		sys.exit(1)
 
 	# load data frame
-	df = pd.read_table(sys.argv[1])
+	df = pd.read_csv(sys.argv[1], sep="\t")
 
 	# initialize config object
 	config = {
