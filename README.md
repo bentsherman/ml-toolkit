@@ -1,4 +1,4 @@
-# ml-tools
+# ml-toolkit
 
 This repository is a collection of command-line tools for data analysis and visualization. These tools essentially form a thin interface around several commonly-used Python packages for data science and machine learning.
 
@@ -6,7 +6,7 @@ This repository is a collection of command-line tools for data analysis and visu
 
 This tool depends on several Python packages, all of which can be easily installed in an Anaconda environment:
 ```bash
-conda install matplotlib numpy pandas scikit-learn seaborn tensorflow-gpu==1.7.0
+conda install matplotlib numpy pandas scikit-learn seaborn tensorflow-gpu==1.12.0
 ```
 
 ## Usage
