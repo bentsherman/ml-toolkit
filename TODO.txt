@@ -1,0 +1,5 @@
+misc
+- support multiple dataframe formats
+- command-line arguments to specify algorithms, hyperparameters
+- expand config file
+- keyword argument for toy datasets
